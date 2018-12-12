@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
+public class PcController : MonoBehaviour {
 
-	public float heightOffset = 0.5f;
-	public float lerpSpeed = 0.1f;
-	public float minSnapDistance = 0.05f;
+	public float heightOffset = 0.5f;		// This number accounts for the difference in player model height so it sits nicely on the floor
+	public float lerpSpeed = 0.1f;			// How fast the character will move between squares (0-1 only)
+	public float minSnapDistance = 0.05f;	// How close the character must get to its destination before it snaps into position
 
 	public bool ________________;
 
-	public bool isSelected = false;
-	public bool isMoving = false;
+	public bool isSelected = false;			// True if this character is selected
+	public bool isMoving = false;			// True if this character is moving
 	public Vector3 movementDestination;
 	public GameManager.MovementType curMovementType;
 
@@ -37,6 +37,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 
+		// Go there!
 		if (isMoving) {
 			MoveTo(movementDestination);
 		}
@@ -53,6 +54,7 @@ public class PlayerController : MonoBehaviour {
 		// TODO - Change based off of movement type?
 		transform.position = Vector3.Lerp(transform.position, destination, lerpSpeed);
 
+		// Move until you get within minSnapDistance and then snap to position and stop moving
 		if (Vector3.Distance (transform.position, destination) < minSnapDistance) {
 			transform.position = destination;
 			isMoving = false;
@@ -60,11 +62,11 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 
-	void UpdateSelectedChar(bool shouldBeSelected){
+	public void UpdateSelectedChar(bool shouldBeSelected){
 		if (shouldBeSelected) {
 			// De-select old character if it exists
 			if (gameManager.curSelectedCharacter) {
-				gameManager.curSelectedCharacter.GetComponent<PlayerController> ().isSelected = false;
+				gameManager.curSelectedCharacter.GetComponent<PcController> ().isSelected = false;
 				gameManager.curSelectedCharacter.GetComponent<Renderer> ().material.color = Color.gray;
 			}
 

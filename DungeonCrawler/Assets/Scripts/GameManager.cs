@@ -13,8 +13,7 @@ public class GameManager : MonoBehaviour {
 	void Update(){
 		// Deselct the currently selected character upon esc keypress
 		if (Input.GetKeyDown(KeyCode.Escape) && curSelectedCharacter) {
-			curSelectedCharacter.GetComponent<PlayerController>().isSelected = false;
-			curSelectedCharacter = null;
+			curSelectedCharacter.GetComponent<PcController> ().UpdateSelectedChar (false);
 		}
 	}
 }
