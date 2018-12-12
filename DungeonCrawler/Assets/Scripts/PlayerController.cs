@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour {
 
 	public float heightOffset = 0.5f;
 	public float lerpSpeed = 0.1f;
+	public float minSnapDistance = 0.05f;
 
 	public bool ________________;
 
@@ -52,7 +53,7 @@ public class PlayerController : MonoBehaviour {
 		// TODO - Change based off of movement type?
 		transform.position = Vector3.Lerp(transform.position, destination, lerpSpeed);
 
-		if (Vector3.Distance (transform.position, destination) < 0.1f) {
+		if (Vector3.Distance (transform.position, destination) < minSnapDistance) {
 			transform.position = destination;
 			isMoving = false;
 			UpdateSelectedChar (false);
