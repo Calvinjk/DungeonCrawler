@@ -4,7 +4,10 @@ using UnityEngine;
 
 // The GameManager tracks and stores gamedata other classes may need to access
 public class GameManager : MonoBehaviour {
-		
+
+	public enum MovementType{ Grid, Free };
+	public enum GameState{ };
+
 	public GameObject curSelectedCharacter = null;
 
 	void Update(){
