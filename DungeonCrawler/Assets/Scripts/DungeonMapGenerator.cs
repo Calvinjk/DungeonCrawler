@@ -8,9 +8,9 @@ public class DungeonMapGenerator : MonoBehaviour {
 	public int maxZDimension = 10;  // Max size of the dungeon floor in the Z direction
 	public int maxHeight = 1;       // Max height of the stackable floor tiles
 
-	public GameObject floorTile;	
+	public GameObject floorTile;	// Prefab of a floor tile model to generate.  
 
-	public Material darkTexture;
+	public Material darkTexture;	
 	public Material lightTexture;
 
 	public bool _____________________;
@@ -19,7 +19,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 	void Start(){
 		//This line is for testing purposes only
-		GenerateMap(DungeonType.Square);
+		//GenerateMap(DungeonType.Square);
 	}
 
 	// Default map generator uses default values for dimensions and height
