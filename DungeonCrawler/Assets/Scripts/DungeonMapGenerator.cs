@@ -24,23 +24,26 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 	// Default map generator uses default values for dimensions and height
 	public GameObject[,] GenerateMap(DungeonType layout){
+		GameObject map = new GameObject("Map");
+		map.transform.position = new Vector3(0f, 0f, 0f);
+
 		switch (layout){
 		// Square layouts will have equal dimensions in the X and Z directions
 		case (DungeonType.Square):
-			return GenerateSquareMap ();
+			return GenerateSquareMap (map);
 		default:
 			Debug.LogError ("Invalid DungeonType passed into map generator");
 			return new GameObject[0, 0];
 		}
 	}
 
-	GameObject[,] GenerateSquareMap(){
+	GameObject[,] GenerateSquareMap(GameObject map){
 		GameObject[,] tiles = new GameObject[maxXDimension, maxXDimension];
 
 		// I will use maxXDimension here exclusively due to both dimensions being equal on a square map
 		for (int i = 0; i < maxXDimension; ++i) {
 			for (int j = 0; j < maxXDimension; ++j) {
-				GameObject curTile = Instantiate (floorTile, new Vector3 (i, 0, j), Quaternion.identity) as GameObject;
+				GameObject curTile = Instantiate (floorTile, new Vector3(i, 0, j), Quaternion.identity) as GameObject;
 				curTile.name = "(" + i + ", 0, " + j + ")";
 
 				// This if block checkerboards the textures so we can clearly see tiles.  Mostly for testing purposes.
@@ -51,6 +54,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 				}
 
 				tiles[i, j] = curTile;
+				curTile.transform.SetParent(map.transform);
 			}
 		} 
 
