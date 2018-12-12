@@ -19,7 +19,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 	void Start(){
 		//This line is for testing purposes only
-		//GenerateMap(DungeonType.Square);
+		GenerateMap(DungeonType.Square);
 	}
 
 	// Default map generator uses default values for dimensions and height
@@ -49,7 +49,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 				// Create a tile and give it a name based on its location
 				GameObject curTile = Instantiate (floorTile, new Vector3(i, 0, j), Quaternion.identity) as GameObject;
-				curTile.name = "(" + i + ", 0, " + j + ")";
+				curTile.name = "(" + i + ", " + j + ")";
 
 				// This if block checkerboards the textures so we can clearly see tiles.  Mostly for testing purposes.
 				if ((i + j) % 2 == 0) {
