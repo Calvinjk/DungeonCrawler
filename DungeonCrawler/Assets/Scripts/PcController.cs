@@ -16,21 +16,25 @@ public class PcController : MonoBehaviour {
 	public GameManager.MovementType curMovementType;
 
 	GameManager gameManager;
+	CameraController cameraScript;
 
 	void Start(){
-		// We need to find and remember the GameManager and MainCamera
+		// We need to find and remember the GameManager and CameraController
 		gameManager = (GameManager)(GameObject.Find("GameManager").GetComponent<GameManager>());
+		cameraScript = (CameraController)(GameObject.Find ("IsometricCameraTarget").GetComponent<CameraController> ());
 	}
 
 	void Update(){
 		// Deal with moving the character if selected and not moving
-		if (isSelected && Input.GetKey(KeyCode.Mouse0) && !isMoving) {
+		if (isSelected && !isMoving && Input.GetKey(KeyCode.Mouse0) 
+			&& (gameManager.curGameState == GameManager.GameState.AwaitingInput)) {
 			// Figure out what tile I just clicked on
 			RaycastHit hit;
 
 			if (Physics.Raycast (Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition), out hit) 
 				&& hit.transform.gameObject.tag != "PlayerCharacter") {
 				isMoving = true;
+				gameManager.curGameState = GameManager.GameState.InputLocked;
 
 				// Now that I know what was it, figure out where I want to move to
 				movementDestination = new Vector3 (hit.transform.position.x, hit.transform.position.y + heightOffset, hit.transform.position.z);
@@ -59,6 +63,7 @@ public class PcController : MonoBehaviour {
 			transform.position = destination;
 			isMoving = false;
 			UpdateSelectedChar (false);
+			gameManager.curGameState = GameManager.GameState.AwaitingInput;
 		}
 	}
 
@@ -74,6 +79,13 @@ public class PcController : MonoBehaviour {
 			gameManager.curSelectedCharacter = this.gameObject;
 			isSelected = true;
 			this.gameObject.GetComponent<Renderer> ().material.color = Color.green;
+
+			// Deal with the camera
+			cameraScript.removeCameraTarget();
+			cameraScript.setCameraTarget (this.gameObject, true);
+
+			// Update game state
+			gameManager.curGameState = GameManager.GameState.InputStalling;
 		} else {
 			// De-select this charcter
 			gameManager.curSelectedCharacter = null;

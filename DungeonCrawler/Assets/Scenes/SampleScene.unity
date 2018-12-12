@@ -303,7 +303,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83607b1b69b130c488d021b9c4a03f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stallTime: 0.2
+  _______________: 0
+  curStallTimer: 0
+  curGameState: 1
   curSelectedCharacter: {fileID: 0}
+  cameraScript: {fileID: 2119269978}
 --- !u!1 &1172607541
 GameObject:
   m_ObjectHideFlags: 0
@@ -439,3 +444,9 @@ Prefab:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
   m_IsPrefabAsset: 0
+--- !u!114 &2119269978 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114489226587383826, guid: c1548a0f5276fb342bf59d1e7c9cd1c4,
+    type: 2}
+  m_PrefabInternal: {fileID: 1089089257}
+  m_Script: {fileID: 11500000, guid: ac0d0d5dedf3002469e43d7225665b87, type: 3}

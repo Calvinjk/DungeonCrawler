@@ -19,6 +19,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4406850751807274}
+  - component: {fileID: 114489226587383826}
   m_Layer: 0
   m_Name: IsometricCameraTarget
   m_TagString: Untagged
@@ -117,3 +118,22 @@ AudioListener:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1194314063112320}
   m_Enabled: 1
+--- !u!114 &114489226587383826
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1153278174146560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ac0d0d5dedf3002469e43d7225665b87, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lerpSpeed: 0.1
+  minSnapDistance: 0.025
+  ________________: 0
+  hasVectorTarget: 0
+  hasObjectTarget: 0
+  followObject: 0
+  vectorTarget: {x: 0, y: 0, z: 0}
+  objectTarget: {fileID: 0}
