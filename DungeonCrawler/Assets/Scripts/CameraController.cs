@@ -9,43 +9,41 @@ public class CameraController : MonoBehaviour {
 
 	public bool ________________;
 
-	public bool hasVectorTarget = false;
-	public bool hasObjectTarget = false;
-	public bool followObject = false;
+	public enum State { Idle, VectorTarget, ObjectTarget };
+
+	public State cameraState = State.Idle;
+	public bool followTarget = false;
 
 	public Vector3 vectorTarget;
 	public GameObject objectTarget;
 
 	public void setCameraTarget(Vector3 target){
 		vectorTarget = target;
-		hasVectorTarget = true;
+		cameraState = State.VectorTarget;
 
 		objectTarget = null;
-		hasObjectTarget = false;
-		followObject = false;
+		followTarget = false;
 	}
 
 	public void setCameraTarget(GameObject target, bool follow){
 		objectTarget = target;
-		hasObjectTarget = true;
-		followObject = follow;
+		cameraState = State.ObjectTarget;
+		followTarget = follow;
 
 		vectorTarget = Vector3.zero;
-		hasVectorTarget = false;
 	}
 
 	public void removeCameraTarget(){
 		vectorTarget = Vector3.zero;
 		objectTarget = null;
-		followObject = false;
-		hasVectorTarget = false;
-		hasObjectTarget = false;
+		followTarget = false;
+		cameraState = State.Idle;
 	}
 
 	// Update is called once per frame
 	void Update () {
 		// Move towards target vector
-		if (hasVectorTarget) {
+		if (cameraState == State.VectorTarget) {
 			transform.position = Vector3.Lerp (transform.position, vectorTarget, lerpSpeed);
 
 			// Snap into place if close enough to target position
@@ -54,23 +52,23 @@ public class CameraController : MonoBehaviour {
 
 				// No reason to keep this location saved if we have reached it already
 				vectorTarget = Vector3.zero;
-				hasVectorTarget = false;
+				cameraState = State.Idle;
 			}
 		}
 
 		// Move towards target object
-		if (hasObjectTarget){
+		if (cameraState == State.ObjectTarget){
 			Vector3 targetPosition = objectTarget.transform.position;
 			transform.position = Vector3.Lerp (transform.position, targetPosition, lerpSpeed);
 
-			if (!followObject) {
+			if (!followTarget) {
 				// Snap into place if close enough to target object
 				if (Vector3.Distance (transform.position, targetPosition) < minSnapDistance) {
 					transform.position = vectorTarget;
 
 					// No reason to keep this location saved if we have reached it already
 					objectTarget = null;
-					hasObjectTarget = false;
+					cameraState = State.Idle;
 				}
 			}
 		}
