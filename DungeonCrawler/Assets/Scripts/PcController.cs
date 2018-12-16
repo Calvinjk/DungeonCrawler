@@ -36,7 +36,7 @@ public class PcController : MonoBehaviour {
 				isMoving = true;
 				gameManager.curGameState = GameManager.GameState.InputLocked;
 
-				// Now that I know what was it, figure out where I want to move to
+				// Now that I know what it was, figure out where I want to move to
 				movementDestination = new Vector3 (hit.transform.position.x, hit.transform.position.y + heightOffset, hit.transform.position.z);
 			}
 		}
@@ -49,7 +49,7 @@ public class PcController : MonoBehaviour {
 
 	// If this character is clicked on, select them for movement and such.
 	void OnMouseDown(){
-		if (!isSelected) {
+		if (!isSelected && gameManager.curGameState == GameManager.GameState.AwaitingInput) {
 			UpdateSelectedChar (true);
 		}
 	}
