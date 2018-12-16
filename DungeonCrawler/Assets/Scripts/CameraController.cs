@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
+	public float freeCameraSpeed = .1f;
 	public float lerpSpeed = 0.1f;
 	public float minSnapDistance = 0.025f;
 
@@ -42,8 +43,9 @@ public class CameraController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		switch (cameraState){
 		// Move towards target vector
-		if (cameraState == State.VectorTarget) {
+		case State.VectorTarget:	
 			transform.position = Vector3.Lerp (transform.position, vectorTarget, lerpSpeed);
 
 			// Snap into place if close enough to target position
@@ -54,10 +56,9 @@ public class CameraController : MonoBehaviour {
 				vectorTarget = Vector3.zero;
 				cameraState = State.Idle;
 			}
-		}
-
+			break;
 		// Move towards target object
-		if (cameraState == State.ObjectTarget){
+		case State.ObjectTarget:
 			Vector3 targetPosition = objectTarget.transform.position;
 			transform.position = Vector3.Lerp (transform.position, targetPosition, lerpSpeed);
 
@@ -71,6 +72,25 @@ public class CameraController : MonoBehaviour {
 					cameraState = State.Idle;
 				}
 			}
+			break;
+		// Free target the camera
+		case State.Idle:
+			if (Input.GetKey (KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+				transform.position = new Vector3 (transform.position.x - freeCameraSpeed, transform.position.y, transform.position.z + freeCameraSpeed);
+			}
+			if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)){
+				transform.position = new Vector3 (transform.position.x + freeCameraSpeed, transform.position.y, transform.position.z - freeCameraSpeed);
+			}
+			if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)){
+				transform.position = new Vector3 (transform.position.x + freeCameraSpeed, transform.position.y, transform.position.z + freeCameraSpeed);
+			}
+			if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)){
+				transform.position = new Vector3 (transform.position.x - freeCameraSpeed, transform.position.y, transform.position.z - freeCameraSpeed);
+			}
+			break;
+		default:
+			Debug.LogError ("Invalid CameraState");
+			break;
 		}
 	}
 }
