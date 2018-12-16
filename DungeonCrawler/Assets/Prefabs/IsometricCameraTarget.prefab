@@ -129,11 +129,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac0d0d5dedf3002469e43d7225665b87, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  freeCameraSpeed: 5
   lerpSpeed: 0.1
   minSnapDistance: 0.025
   ________________: 0
-  hasVectorTarget: 0
-  hasObjectTarget: 0
-  followObject: 0
+  cameraState: 0
+  followTarget: 0
   vectorTarget: {x: 0, y: 0, z: 0}
   objectTarget: {fileID: 0}

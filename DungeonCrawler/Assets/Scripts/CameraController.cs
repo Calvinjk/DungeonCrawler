@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
-	public float freeCameraSpeed = .1f;
+	public float freeCameraSpeed = 1f;
 	public float lerpSpeed = 0.1f;
 	public float minSnapDistance = 0.025f;
 
@@ -76,16 +76,16 @@ public class CameraController : MonoBehaviour {
 		// Free target the camera
 		case State.Idle:
 			if (Input.GetKey (KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
-				transform.position = new Vector3 (transform.position.x - freeCameraSpeed, transform.position.y, transform.position.z + freeCameraSpeed);
+				transform.position = new Vector3 (transform.position.x - (freeCameraSpeed * Time.deltaTime), transform.position.y, transform.position.z + (freeCameraSpeed * Time.deltaTime));
 			}
 			if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)){
-				transform.position = new Vector3 (transform.position.x + freeCameraSpeed, transform.position.y, transform.position.z - freeCameraSpeed);
+				transform.position = new Vector3 (transform.position.x + (freeCameraSpeed * Time.deltaTime), transform.position.y, transform.position.z - (freeCameraSpeed * Time.deltaTime));
 			}
 			if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)){
-				transform.position = new Vector3 (transform.position.x + freeCameraSpeed, transform.position.y, transform.position.z + freeCameraSpeed);
+				transform.position = new Vector3 (transform.position.x + (freeCameraSpeed * Time.deltaTime), transform.position.y, transform.position.z + (freeCameraSpeed * Time.deltaTime));
 			}
 			if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)){
-				transform.position = new Vector3 (transform.position.x - freeCameraSpeed, transform.position.y, transform.position.z - freeCameraSpeed);
+				transform.position = new Vector3 (transform.position.x - (freeCameraSpeed * Time.deltaTime), transform.position.y, transform.position.z - (freeCameraSpeed * Time.deltaTime));
 			}
 			break;
 		default:
