@@ -6,7 +6,11 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
 
 	public enum MovementType{ Grid, Free };
-	public enum GameState{ InputLocked, AwaitingInput, InputStalling };
+	public enum GameState{ 
+		InputLocked, 
+		AwaitingInput, 
+		InputStalling 
+	};
 
 	public float stallTime = 0.5f;
 

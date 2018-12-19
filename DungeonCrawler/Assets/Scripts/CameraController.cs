@@ -10,9 +10,13 @@ public class CameraController : MonoBehaviour {
 
 	public bool ________________;
 
-	public enum State { Idle, VectorTarget, ObjectTarget };
+	public enum CameraState { 
+		Idle, 
+		VectorTarget, 
+		ObjectTarget 
+	};
 
-	public State cameraState = State.Idle;
+	public CameraState cameraState = CameraState.Idle;
 	public bool followTarget = false;
 
 	public Vector3 vectorTarget;
@@ -20,7 +24,7 @@ public class CameraController : MonoBehaviour {
 
 	public void setCameraTarget(Vector3 target){
 		vectorTarget = target;
-		cameraState = State.VectorTarget;
+		cameraState = CameraState.VectorTarget;
 
 		objectTarget = null;
 		followTarget = false;
@@ -28,7 +32,7 @@ public class CameraController : MonoBehaviour {
 
 	public void setCameraTarget(GameObject target, bool follow){
 		objectTarget = target;
-		cameraState = State.ObjectTarget;
+		cameraState = CameraState.ObjectTarget;
 		followTarget = follow;
 
 		vectorTarget = Vector3.zero;
@@ -38,14 +42,14 @@ public class CameraController : MonoBehaviour {
 		vectorTarget = Vector3.zero;
 		objectTarget = null;
 		followTarget = false;
-		cameraState = State.Idle;
+		cameraState = CameraState.Idle;
 	}
 
 	// Update is called once per frame
 	void Update () {
 		switch (cameraState){
 		// Move towards target vector
-		case State.VectorTarget:	
+		case CameraState.VectorTarget:	
 			transform.position = Vector3.Lerp (transform.position, vectorTarget, lerpSpeed);
 
 			// Snap into place if close enough to target position
@@ -54,11 +58,11 @@ public class CameraController : MonoBehaviour {
 
 				// No reason to keep this location saved if we have reached it already
 				vectorTarget = Vector3.zero;
-				cameraState = State.Idle;
+				cameraState = CameraState.Idle;
 			}
 			break;
 		// Move towards target object
-		case State.ObjectTarget:
+		case CameraState.ObjectTarget:
 			Vector3 targetPosition = objectTarget.transform.position;
 			transform.position = Vector3.Lerp (transform.position, targetPosition, lerpSpeed);
 
@@ -69,12 +73,12 @@ public class CameraController : MonoBehaviour {
 
 					// No reason to keep this location saved if we have reached it already
 					objectTarget = null;
-					cameraState = State.Idle;
+					cameraState = CameraState.Idle;
 				}
 			}
 			break;
 		// Free target the camera
-		case State.Idle:
+		case CameraState.Idle:
 			if (Input.GetKey (KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
 				transform.position = new Vector3 (transform.position.x - (freeCameraSpeed * Time.deltaTime), transform.position.y, transform.position.z + (freeCameraSpeed * Time.deltaTime));
 			}

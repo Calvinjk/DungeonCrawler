@@ -51,6 +51,10 @@ public class DungeonMapGenerator : MonoBehaviour {
 				GameObject curTile = Instantiate (floorTile, new Vector3(i, 0, j), Quaternion.identity) as GameObject;
 				curTile.name = "(" + i + ", " + j + ")";
 
+				// When instantiating a Tile, set its location.  Currently we do not need to mess with any of the other member variables, but that may change.
+				Tile curTileScript = (Tile)curTile.GetComponent<Tile>();
+				curTileScript.location = new Vector2Int (i, j);
+
 				// This if block checkerboards the textures so we can clearly see tiles.  Mostly for testing purposes.
 				if ((i + j) % 2 == 0) {
 					curTile.GetComponent<Renderer>().material = darkTexture;
