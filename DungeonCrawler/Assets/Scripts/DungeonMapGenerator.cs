@@ -17,54 +17,51 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 	public enum DungeonType {Square};
 
-	void Start(){
-		//This line is for testing purposes only
-		GenerateMap(DungeonType.Square);
-	}
-
 	// Default map generator uses default values for dimensions and height
-	public GameObject[,] GenerateMap(DungeonType layout){
+	public Map GenerateMap(DungeonType layout){
 		// Create an empty parent object for the map
 		GameObject map = new GameObject("Map");	
 		map.transform.position = new Vector3(0f, 0f, 0f);
+		map.AddComponent<Map> ();
 
 		// Switch case based on the layout of map desired
 		switch (layout){
 		// Square layouts will have equal dimensions in the X and Z directions
 		case (DungeonType.Square):
-			return GenerateSquareMap (map);
+			map.GetComponent<Map> ().tileMap = GenerateSquareMap (map);
+			return map.GetComponent<Map>();
 		default:  // If the code reaches this default block, something went wrong and we should show an error while returning an empty map
 			Debug.LogError ("Invalid DungeonType passed into map generator");
-			return new GameObject[0, 0];
+			return null;
 		}
 	}
 
 	// This function will generate a square map given a parent object to put all the pieces under
-	GameObject[,] GenerateSquareMap(GameObject map){
-		GameObject[,] tiles = new GameObject[maxXDimension, maxXDimension];
+	Tile[,] GenerateSquareMap(GameObject map){
+		Tile[,] tiles = new Tile[maxXDimension, maxXDimension];
 
 		// I will use maxXDimension here exclusively due to both dimensions being equal on a square map
 		for (int i = 0; i < maxXDimension; ++i) {
 			for (int j = 0; j < maxXDimension; ++j) {
 
 				// Create a tile and give it a name based on its location
-				GameObject curTile = Instantiate (floorTile, new Vector3(i, 0, j), Quaternion.identity) as GameObject;
-				curTile.name = "(" + i + ", " + j + ")";
+				GameObject curTileObject = Instantiate (floorTile, new Vector3(i, 0, j), Quaternion.identity) as GameObject;
+				curTileObject.name = "(" + i + ", " + j + ")";
 
 				// When instantiating a Tile, set its location.  Currently we do not need to mess with any of the other member variables, but that may change.
-				Tile curTileScript = (Tile)curTile.GetComponent<Tile>();
-				curTileScript.location = new Vector2Int (i, j);
+				Tile newTile = new Tile();
+				newTile.location = new Vector2Int (i, j);
 
 				// This if block checkerboards the textures so we can clearly see tiles.  Mostly for testing purposes.
 				if ((i + j) % 2 == 0) {
-					curTile.GetComponent<Renderer>().material = darkTexture;
+					curTileObject.GetComponent<Renderer>().material = darkTexture;
 				} else {
-					curTile.GetComponent<Renderer>().material = lightTexture;
+					curTileObject.GetComponent<Renderer>().material = lightTexture;
 				}
 
-				// Add the generated tile to the tiles array and set its parent to the passed-in parameter.
-				tiles[i, j] = curTile;
-				curTile.transform.SetParent(map.transform);
+				// Add the generated tile to the tiles array and set the object's parent to the passed-in parameter.
+				tiles[i, j] = newTile;
+				curTileObject.transform.SetParent(map.transform);
 			}
 		} 
 			

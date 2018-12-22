@@ -10,10 +10,13 @@ public class PcController : MonoBehaviour {
 
 	public bool ________________;
 
+	public Vector2Int curLocation = Vector2Int.zero;
 	public bool isSelected = false;			// True if this character is selected
 	public bool isMoving = false;			// True if this character is moving
-	public GameObject movementDestination;
+	public Tile movementDestination;
 	public GameManager.MovementType curMovementType;
+	public Dictionary<Tile, int> pathDict = new Dictionary<Tile, int>();
+	public List<Tile> movePath;
 
 	GameManager gameManager;
 	CameraController cameraScript;
@@ -37,13 +40,13 @@ public class PcController : MonoBehaviour {
 				gameManager.curGameState = GameManager.GameState.InputLocked;
 
 				// Now that I know what it was, figure out where I want to move to
-				movementDestination = hit.transform.gameObject;
+				movementDestination = gameManager.map.tileMap[(int)hit.transform.position.x, (int)hit.transform.position.z];
 			}
 		}
 
 		// Go there!
 		if (isMoving) {
-			StartCoroutine(MoveTo(movementDestination));
+			MoveTo(movementDestination);
 		}
 	}
 
@@ -54,19 +57,24 @@ public class PcController : MonoBehaviour {
 		}
 	}
 
-	// Returns true if movement was successful, false otherwise.
-	public IEnumerator MoveTo(GameObject destinationTile){
-		transform.position = Vector3.Lerp(transform.position, destinationTile.transform.position, lerpSpeed);
+	void FindPath(Tile startTile, Tile endTile){
+	
+	}
+
+	// TODO - Grid-based movement
+	void MoveTo(Tile destinationTile){
+		Vector3 destinationPosition = new Vector3 (destinationTile.location.x, heightOffset, destinationTile.location.y);
+		transform.position = Vector3.Lerp(transform.position, destinationPosition, lerpSpeed);
 
 		// Move until you get within minSnapDistance and then snap to position and stop moving
-		if (Vector3.Distance (transform.position, destinationTile.transform.position) < minSnapDistance) {
-			transform.position = destinationTile.transform.position;
+		if (Vector3.Distance (transform.position, destinationPosition) < minSnapDistance) {
+			transform.position = destinationPosition;
 			isMoving = false;
 			UpdateSelectedChar (false);
 			gameManager.curGameState = GameManager.GameState.AwaitingInput;
 		}
 
-		yield return null;
+		return;
 	}
 
 	public void UpdateSelectedChar(bool shouldBeSelected){

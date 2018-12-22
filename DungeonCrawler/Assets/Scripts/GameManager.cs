@@ -18,9 +18,17 @@ public class GameManager : MonoBehaviour {
 
 	public float curStallTimer = 0f;
 	public GameState curGameState = GameState.AwaitingInput;
+	public Map map;
+	public Vector2Int mapDimensions = Vector2Int.zero;
 	public GameObject curSelectedCharacter = null;
-	public CameraController cameraScript;
 
+	public CameraController cameraScript;
+	public DungeonMapGenerator generatorScript;
+
+	void Start(){
+		// Start the game off by generating a room
+		map = generatorScript.GenerateMap(DungeonMapGenerator.DungeonType.Square);
+	}
 
 	void Update(){
 		// Deselect the currently selected character upon esc keypress

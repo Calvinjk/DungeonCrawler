@@ -770,8 +770,10 @@ MonoBehaviour:
   _______________: 0
   curStallTimer: 0
   curGameState: 1
+  mapDimensions: {x: 10, y: 10}
   curSelectedCharacter: {fileID: 0}
   cameraScript: {fileID: 2119269978}
+  generatorScript: {fileID: 1172607542}
 --- !u!1 &1172607541
 GameObject:
   m_ObjectHideFlags: 0
@@ -857,6 +859,11 @@ Prefab:
     - target: {fileID: 4192760281535032, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114078563921923828, guid: 51896a2df9663f247bcdfd3624b011d4,
+        type: 2}
+      propertyPath: curTile
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
@@ -993,6 +1000,21 @@ Prefab:
     - target: {fileID: 1576303071549148, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
       propertyPath: m_Name
       value: SampleCharacter (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 114078563921923828, guid: 51896a2df9663f247bcdfd3624b011d4,
+        type: 2}
+      propertyPath: curLocation.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114078563921923828, guid: 51896a2df9663f247bcdfd3624b011d4,
+        type: 2}
+      propertyPath: isMoving
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 114078563921923828, guid: 51896a2df9663f247bcdfd3624b011d4,
+        type: 2}
+      propertyPath: curTile
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
