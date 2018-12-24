@@ -43,6 +43,7 @@ public class Heap<T> where T: IHeapItem<T>{
 	}
 
 	// When updating an item for pathfinding, we only ever decrease the "weight", so only sortup is necessary
+	// IMPORTANT: Call this if an item in the heap is externally changed
 	public void UpdateItem(T item){
 		SortUp (item);
 	}
@@ -72,6 +73,7 @@ public class Heap<T> where T: IHeapItem<T>{
 
 				// If it has two children, determine which it should swap with
 				if (childIndexRight < currentItemCount) {
+					// CompareTo: Higher priority (1), Equal priority (0), Lower priority (-1)
 					if (items [childIndexLeft].CompareTo (items [childIndexRight]) < 0) {
 						swapIndex = childIndexRight;
 					}

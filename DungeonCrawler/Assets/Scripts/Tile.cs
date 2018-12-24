@@ -11,14 +11,18 @@ public class Tile : IHeapItem<Tile> {
 		Enemy
 	};
 
+	public int heapIndex = 0;
 	public int HeapIndex{
-		get{ return HeapIndex; }
-		set{ HeapIndex = value; }
+		get{ return heapIndex; }
+		set{ heapIndex = value; }
 	}
 		
 	public bool ________________;
 	public Vector2Int location;
 	public TileState curTileState = TileState.Open;
+
+	// Pathfinding variables
+	public Tile parent;
 	public int pathWeight = 0;
 
 	public void PrintTile(){

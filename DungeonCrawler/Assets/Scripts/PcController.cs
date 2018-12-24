@@ -10,7 +10,7 @@ public class PcController : MonoBehaviour {
 
 	public bool ________________;
 
-	public Vector2Int curLocation = Vector2Int.zero;
+	public Tile curLocation;
 	public bool isSelected = false;			// True if this character is selected
 	public bool isMoving = false;			// True if this character is moving
 	public Tile movementDestination;
@@ -28,6 +28,11 @@ public class PcController : MonoBehaviour {
 	}
 
 	void Update(){
+		// I don't like that I am doing this, but gotta always know my location
+		if (!isMoving){
+			curLocation = gameManager.map.tileMap [(int)transform.position.x, (int)transform.position.z];
+		}
+
 		// Deal with moving the character if selected and not moving
 		if (isSelected && !isMoving && Input.GetKey(KeyCode.Mouse0) 
 			&& (gameManager.curGameState == GameManager.GameState.AwaitingInput)) {
@@ -41,6 +46,13 @@ public class PcController : MonoBehaviour {
 
 				// Now that I know what it was, figure out where I want to move to
 				movementDestination = gameManager.map.tileMap[(int)hit.transform.position.x, (int)hit.transform.position.z];
+
+				// TESTING RIGHT NOW
+				movePath = gameManager.map.FindPath(curLocation, movementDestination);
+				Debug.Log ("PRINTING PATH");
+				foreach (Tile tile in movePath) {
+					tile.PrintTile();
+				}
 			}
 		}
 
@@ -55,10 +67,6 @@ public class PcController : MonoBehaviour {
 		if (!isSelected && gameManager.curGameState == GameManager.GameState.AwaitingInput) {
 			UpdateSelectedChar (true);
 		}
-	}
-
-	void FindPath(Tile startTile, Tile endTile){
-	
 	}
 
 	// TODO - Grid-based movement

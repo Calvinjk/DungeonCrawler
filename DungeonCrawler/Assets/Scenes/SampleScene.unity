@@ -770,6 +770,7 @@ MonoBehaviour:
   _______________: 0
   curStallTimer: 0
   curGameState: 1
+  map: {fileID: 0}
   mapDimensions: {x: 10, y: 10}
   curSelectedCharacter: {fileID: 0}
   cameraScript: {fileID: 2119269978}
