@@ -31,6 +31,7 @@ public class PcController : MonoBehaviour {
 		// I don't like that I am doing this, but gotta always know my location
 		if (!isMoving){
 			curLocation = gameManager.map.tileMap [(int)transform.position.x, (int)transform.position.z];
+			curLocation.curTileState = Tile.TileState.Ally;
 		}
 
 		// Deal with moving the character if selected and not moving
@@ -41,14 +42,23 @@ public class PcController : MonoBehaviour {
 
 			if (Physics.Raycast (Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition), out hit) 
 				&& hit.transform.gameObject.tag != "PlayerCharacter") {
-				isMoving = true;
-				gameManager.curGameState = GameManager.GameState.InputLocked;
 
-				// Now that I know what it was, figure out where I want to move to
+				// Now that I know what it was, figure out what tile I want to move to
 				movementDestination = gameManager.map.tileMap[(int)hit.transform.position.x, (int)hit.transform.position.z];
 
-				// Determine the shortest path using the map.FindPath algorithm
-				movePath = gameManager.map.FindPath(curLocation, movementDestination);
+				// Determine if that tile is valid to move to
+				if (movementDestination.curTileState == Tile.TileState.Open) {
+					isMoving = true;
+					gameManager.curGameState = GameManager.GameState.InputLocked;
+
+					// Reset the state of the tile I used to be on
+					curLocation.curTileState = Tile.TileState.Open;
+
+					// Determine the shortest path using the map.FindPath algorithm
+					movePath = gameManager.map.FindPath (curLocation, movementDestination);
+				} else {
+					UpdateSelectedChar (false);
+				}
 			}
 		}
 
