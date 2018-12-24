@@ -47,18 +47,14 @@ public class PcController : MonoBehaviour {
 				// Now that I know what it was, figure out where I want to move to
 				movementDestination = gameManager.map.tileMap[(int)hit.transform.position.x, (int)hit.transform.position.z];
 
-				// TESTING RIGHT NOW
+				// Determine the shortest path using the map.FindPath algorithm
 				movePath = gameManager.map.FindPath(curLocation, movementDestination);
-				Debug.Log ("PRINTING PATH");
-				foreach (Tile tile in movePath) {
-					tile.PrintTile();
-				}
 			}
 		}
 
 		// Go there!
 		if (isMoving) {
-			MoveTo(movementDestination);
+			MoveTo(movePath);
 		}
 	}
 
@@ -68,21 +64,34 @@ public class PcController : MonoBehaviour {
 			UpdateSelectedChar (true);
 		}
 	}
-
-	// TODO - Grid-based movement
-	void MoveTo(Tile destinationTile){
+		
+	// Moves closer to the destinationTile 
+	// True if it reached the destination and snapped to it
+	// False if it is still in transit
+	bool MoveTo(Tile destinationTile){
 		Vector3 destinationPosition = new Vector3 (destinationTile.location.x, heightOffset, destinationTile.location.y);
 		transform.position = Vector3.Lerp(transform.position, destinationPosition, lerpSpeed);
 
 		// Move until you get within minSnapDistance and then snap to position and stop moving
 		if (Vector3.Distance (transform.position, destinationPosition) < minSnapDistance) {
 			transform.position = destinationPosition;
-			isMoving = false;
-			UpdateSelectedChar (false);
-			gameManager.curGameState = GameManager.GameState.AwaitingInput;
+			return true;
 		}
 
-		return;
+		return false;
+	}
+
+	void MoveTo(List<Tile> path){
+		// Move to the next tile in the lineup and see if it was reached this frame
+		if (MoveTo(path[0])){
+			// If we reached this tile, remove it and check if there is still a path to follow
+			path.Remove (path [0]);
+			if (path.Count == 0) { // We finished traversing the path
+				isMoving = false;
+				UpdateSelectedChar (false);
+				gameManager.curGameState = GameManager.GameState.AwaitingInput;
+			}
+		}
 	}
 
 	public void UpdateSelectedChar(bool shouldBeSelected){
