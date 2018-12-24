@@ -91,6 +91,7 @@ public class PcController : MonoBehaviour {
 		return false;
 	}
 
+	// Checks the path and starts moving along it
 	void MoveTo(List<Tile> path){
 		// Move to the next tile in the lineup and see if it was reached this frame
 		if (MoveTo(path[0])){
