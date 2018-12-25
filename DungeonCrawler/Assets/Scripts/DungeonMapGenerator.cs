@@ -59,6 +59,15 @@ public class DungeonMapGenerator : MonoBehaviour {
 					curTileObject.GetComponent<Renderer>().material = lightTexture;
 				}
 
+				// For testing, I am hard-coding in a few "obstructions"
+				if ((i == 4 && j == 4) 
+					|| (i == 1 && j == 8) 
+					|| (i == 2 && j == 7) || (i == 2 && j == 6) || (i == 2 && j == 5)
+					|| (i == 3 && j == 5) || (i == 4 && j == 5) || (i == 5 && j == 5)){
+					curTileObject.GetComponent<Renderer> ().material.color = Color.red;
+					newTile.curTileState = Tile.TileState.Obstructed;
+				}
+
 				// Add the generated tile to the tiles array and set the object's parent to the passed-in parameter.
 				tiles[i, j] = newTile;
 				curTileObject.transform.SetParent(map.transform);
