@@ -41,7 +41,7 @@ public class PcController : MonoBehaviour {
 			RaycastHit hit;
 
 			if (Physics.Raycast (Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition), out hit) 
-				&& hit.transform.gameObject.tag != "PlayerCharacter") {
+				&& hit.transform.gameObject.tag == "Tile") {
 
 				// Now that I know what it was, figure out what tile I want to move to
 				movementDestination = gameManager.map.tileMap[(int)hit.transform.position.x, (int)hit.transform.position.z];
