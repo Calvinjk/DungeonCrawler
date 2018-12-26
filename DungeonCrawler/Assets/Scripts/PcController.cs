@@ -129,6 +129,9 @@ public class PcController : MonoBehaviour {
 			gameManager.curSelectedCharacter = null;
 			isSelected = false;
 			this.gameObject.GetComponent<Renderer> ().material.color = Color.gray;
+
+			// Deal with the camera
+			cameraScript.removeCameraTarget();
 		}
 	}
 }

@@ -68,6 +68,7 @@ public class CameraController : MonoBehaviour {
 
 			if (!followTarget) {
 				// Snap into place if close enough to target object
+				Debug.Log("Camera distance to target: " + Vector3.Distance (transform.position, targetPosition));
 				if (Vector3.Distance (transform.position, targetPosition) < minSnapDistance) {
 					transform.position = vectorTarget;
 
