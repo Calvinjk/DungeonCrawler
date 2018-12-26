@@ -47,7 +47,7 @@ public class Map : MonoBehaviour {
 
 			foreach (Tile neighbor in GetNeighbors(currentTile)) {
 				// If we cant walk on it or if we have already checked it, dont add it again to the openSet
-				if (neighbor.curTileState != Tile.TileState.Open || closedSet.Contains(neighbor)) {
+				if (neighbor.curTileState == Tile.TileState.Enemy || neighbor.curTileState == Tile.TileState.Obstructed || closedSet.Contains(neighbor)) {
 					continue;
 				}
 
