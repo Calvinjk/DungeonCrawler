@@ -40,7 +40,12 @@ public class PcController : MonoBehaviour {
 			// Figure out what tile I just clicked on
 			RaycastHit hit;
 
-			if (Physics.Raycast (Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition), out hit) 
+			// Bit shift the layermask to have a 1 in the 9th spot (Player Character layer)
+			int layerMask = 1 << 9;
+			// Invert the layermask so we AVOID the layer specificed
+			layerMask = ~layerMask;
+
+			if (Physics.Raycast (Camera.main.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition), out hit, Mathf.Infinity, layerMask) 
 				&& hit.transform.gameObject.tag == "Tile") {
 
 				// Now that I know what it was, figure out what tile I want to move to

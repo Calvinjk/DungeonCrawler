@@ -866,6 +866,10 @@ Prefab:
       propertyPath: curTile
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 1576303071549148, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
+      propertyPath: m_Layer
+      value: 9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
   m_IsPrefabAsset: 0
@@ -1016,6 +1020,10 @@ Prefab:
         type: 2}
       propertyPath: curTile
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 1576303071549148, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
+      propertyPath: m_Layer
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
