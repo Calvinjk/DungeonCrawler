@@ -49,8 +49,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 				curTileObject.name = "(" + i + ", " + j + ")";
 
 				// When instantiating a Tile, set its location.  Currently we do not need to mess with any of the other member variables, but that may change.
-				Tile newTile = new Tile();
-				newTile.location = new Vector2Int (i, j);
+				Tile newTile = new Tile(new Vector2Int (i, j));
 
 				// This if block checkerboards the textures so we can clearly see tiles.  Mostly for testing purposes.
 				if ((i + j) % 2 == 0) {
