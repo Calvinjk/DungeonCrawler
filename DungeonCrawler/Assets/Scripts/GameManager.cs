@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour {
 	};
 
 	public float stallTime = 0.5f;
+	public Material overlayMaterial;
 
 	public bool _______________;
 

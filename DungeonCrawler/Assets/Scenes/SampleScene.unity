@@ -767,6 +767,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   stallTime: 0.2
+  overlayMaterial: {fileID: 2100000, guid: 67f502b9caf8cf34c9585aa410c0c340, type: 2}
   _______________: 0
   curStallTimer: 0
   curGameState: 1

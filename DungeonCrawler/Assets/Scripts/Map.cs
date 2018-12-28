@@ -7,25 +7,7 @@ public class Map : MonoBehaviour {
 	public int xSize = 10;
 	public int ySize = 10;
 
-	public List<Tile> GetNeighbors(Tile tile){
-		List<Tile> neighbors = new List<Tile> ();
-
-		for (int i = -1; i <= 1; ++i) {
-			for (int j = -1; j <= 1; ++j) {
-				if (i == 0 && j == 0) { continue; } // No need to check the original tile
-
-				int checkX = tile.location.x + i;
-				int checkY = tile.location.y + j;
-
-				if (checkX >= 0 && checkX < xSize && checkY >= 0 && checkY < ySize) {
-					neighbors.Add (tileMap [checkX, checkY]);
-				}
-			}
-		}
-		return neighbors;
-	}
-
-	public List<Tile> FindPath(Tile startTile, Tile targetTile){
+	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance){
 		// Create the two containers necessary for the pathing algorithm
 		Heap<Tile> openSet = new Heap<Tile> (xSize * ySize);
 		HashSet<Tile> closedSet = new HashSet<Tile> ();
@@ -52,13 +34,10 @@ public class Map : MonoBehaviour {
 				}
 
 				int newCostToNeighbor = currentTile.pathWeight + GetTravelCost (currentTile, neighbor);
-				if (newCostToNeighbor < neighbor.pathWeight || !openSet.Contains (neighbor)) {
+				if (newCostToNeighbor <= maxDistance && (newCostToNeighbor < neighbor.pathWeight || !openSet.Contains (neighbor))) {
 					neighbor.pathWeight = newCostToNeighbor;
 					neighbor.parent = currentTile;
-
-					if (!openSet.Contains (neighbor)) {
-						openSet.Add (neighbor);
-					}
+					openSet.Add (neighbor);
 				}
 			}
 		}
@@ -86,10 +65,29 @@ public class Map : MonoBehaviour {
 		int xDiff = Mathf.Abs (tileA.location.x - tileB.location.x);
 		int yDiff = Mathf.Abs (tileA.location.y - tileB.location.y);
 
-		if (xDiff == 1 && yDiff == 1) { //Diagonal
-			return 2;
-		} else {	// Not diagonal
-			return 1;
+		return xDiff + yDiff;
+	}
+
+	public List<Tile> GetNeighbors(Tile tile){
+		List<Tile> neighbors = new List<Tile> ();
+
+		for (int i = -1; i <= 1; ++i) {
+			for (int j = -1; j <= 1; ++j) {
+				if (i == 0 && j == 0) { continue; } // No need to check the original tile
+
+				int checkX = tile.location.x + i;
+				int checkY = tile.location.y + j;
+
+				if (checkX >= 0 && checkX < xSize && checkY >= 0 && checkY < ySize) {
+					neighbors.Add (tileMap [checkX, checkY]);
+				}
+			}
 		}
+		return neighbors;
+	}
+		
+	// This will determine which tiles you can move to, 
+	public List<GameObject> CreateMovementOverlay(Tile location, int moveSpeed){
+		return null; // This is just so everything compiles.  Will write later.
 	}
 }

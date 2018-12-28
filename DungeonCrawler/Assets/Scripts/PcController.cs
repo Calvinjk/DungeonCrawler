@@ -7,6 +7,7 @@ public class PcController : MonoBehaviour {
 	public float heightOffset = 0.5f;		// This number accounts for the difference in player model height so it sits nicely on the floor
 	public float lerpSpeed = 0.1f;			// How fast the character will move between squares. [0, 1] only.  
 	public float minSnapDistance = 0.05f;	// How close the character must get to its destination before it snaps into position
+	public int moveSpeed = 5;				// How many tiles this character can move in a turn
 
 	public bool ________________;
 
@@ -53,14 +54,20 @@ public class PcController : MonoBehaviour {
 
 				// Determine if that tile is valid to move to
 				if (movementDestination.curTileState == Tile.TileState.Open) {
-					isMoving = true;
-					gameManager.curGameState = GameManager.GameState.InputLocked;
 
 					// Reset the state of the tile I used to be on
 					curLocation.curTileState = Tile.TileState.Open;
 
 					// Determine the shortest path using the map.FindPath algorithm
-					movePath = gameManager.map.FindPath (curLocation, movementDestination);
+					movePath = gameManager.map.FindPath (curLocation, movementDestination, moveSpeed);
+
+					// Determine if there was a path found or not
+					if (movePath != null) { 
+						isMoving = true; 
+						gameManager.curGameState = GameManager.GameState.InputLocked;
+					} else {	// Findpath didnt find a valid path
+						UpdateSelectedChar (false);
+					}
 				} else {
 					UpdateSelectedChar (false);
 				}
