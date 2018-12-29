@@ -6,6 +6,7 @@ public class Map : MonoBehaviour {
 	public Tile[,] tileMap;
 	public int xSize = 10;
 	public int ySize = 10;
+	public float overlayVerticalOffset = 0.051f;
 
 	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance){
 		// Create the two containers necessary for the pathing algorithm
@@ -68,6 +69,11 @@ public class Map : MonoBehaviour {
 		return xDiff + yDiff;
 	}
 
+	// Returns true if the location is in the map.   False otherwise.
+	public bool isWithinMap(int x, int y){
+		return x >= 0 && x < xSize && y >= 0 && y < ySize;
+	}
+
 	public List<Tile> GetNeighbors(Tile tile){
 		List<Tile> neighbors = new List<Tile> ();
 
@@ -78,7 +84,7 @@ public class Map : MonoBehaviour {
 				int checkX = tile.location.x + i;
 				int checkY = tile.location.y + j;
 
-				if (checkX >= 0 && checkX < xSize && checkY >= 0 && checkY < ySize) {
+				if (isWithinMap(checkX, checkY)) {
 					neighbors.Add (tileMap [checkX, checkY]);
 				}
 			}
@@ -89,5 +95,33 @@ public class Map : MonoBehaviour {
 	// This will determine which tiles you can move to, 
 	public List<GameObject> CreateMovementOverlay(Tile location, int moveSpeed){
 		return null; // This is just so everything compiles.  Will write later.
+	}
+
+	public GameObject HighlightMovementRange(Tile center, int moveSpeed){
+		GameObject movementOverlay = new GameObject ("MovementOverlay");
+		// Cycle through every tile that might be in our range
+		for (int i = -moveSpeed; i <= moveSpeed; ++i) {
+			for (int j = -moveSpeed; j <= moveSpeed; ++j) {
+				// If it is actually outside of our range, disregard it
+				if ((Mathf.Abs (i) + Mathf.Abs (j)) > moveSpeed) { continue; }
+				// If it would be outside the current map, disregard it
+				if (!isWithinMap(center.location.x + i, center.location.y + j)) { continue; }
+
+
+				Tile curTarget = tileMap [center.location.x + i, center.location.y + j];
+
+				// Check if the tile is walkable and we can get to it
+				if (curTarget.curTileState == Tile.TileState.Open 
+					&& FindPath(center, curTarget, moveSpeed) != null){
+
+					// Highlight that sucker!
+					GameObject movementOverlayTile = Instantiate(Resources.Load("Prefabs/MovementOverlay") as GameObject);
+					movementOverlayTile.name = "MoveOverlay(" + curTarget.location.x + "," + curTarget.location.y + ")";
+					movementOverlayTile.transform.position = new Vector3 (curTarget.location.x, overlayVerticalOffset, curTarget.location.y);
+					movementOverlayTile.transform.SetParent (movementOverlay.transform);
+				}
+			}
+		}
+		return movementOverlay;
 	}
 }

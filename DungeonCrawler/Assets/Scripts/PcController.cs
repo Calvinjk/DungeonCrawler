@@ -12,12 +12,14 @@ public class PcController : MonoBehaviour {
 	public bool ________________;
 
 	public Tile curLocation;
+	public Tile moveDest = null;
 	public bool isSelected = false;			// True if this character is selected
 	public bool isMoving = false;			// True if this character is moving
 	public Tile movementDestination;
 	public GameManager.MovementType curMovementType;
 	public Dictionary<Tile, int> pathDict = new Dictionary<Tile, int>();
 	public List<Tile> movePath;
+	public GameObject movementOverlay;
 
 	GameManager gameManager;
 	CameraController cameraScript;
@@ -36,13 +38,14 @@ public class PcController : MonoBehaviour {
 		}
 
 		// Deal with moving the character if selected and not moving
-		if (isSelected && !isMoving && Input.GetKey(KeyCode.Mouse0) 
+		if (isSelected && !isMoving && Input.GetKeyDown(KeyCode.Mouse0) 
 			&& (gameManager.curGameState == GameManager.GameState.AwaitingInput)) {
 			// Figure out what tile I just clicked on
 			RaycastHit hit;
 
-			// Bit shift the layermask to have a 1 in the 9th spot (Player Character layer)
-			int layerMask = 1 << 9;
+			// Bit shift the layermask to have a 1 in the places that correspond to layers we want ignored
+			// Currently layers 9 and 10 (3 = 0011, shifted 9 places left)
+			int layerMask = 3 << 9;
 			// Invert the layermask so we AVOID the layer specificed
 			layerMask = ~layerMask;
 
@@ -63,8 +66,22 @@ public class PcController : MonoBehaviour {
 
 					// Determine if there was a path found or not
 					if (movePath != null) { 
-						isMoving = true; 
-						gameManager.curGameState = GameManager.GameState.InputLocked;
+						// Highlight the overlay tile to show the selected destination
+						GameObject destOverlayTile = GameObject.Find("MoveOverlay(" + movementDestination.location.x + "," +movementDestination.location.y + ")");
+						destOverlayTile.GetComponent<Renderer> ().material = Resources.Load ("Materials/MovementOverlayConfirmMaterial") as Material;
+
+						// Confirm movement before actually moving
+						if (moveDest != null) {
+							if (moveDest == movementDestination) {
+								isMoving = true; 
+								gameManager.curGameState = GameManager.GameState.InputLocked;
+							} else {
+								moveDest = null;
+								UpdateSelectedChar (false);
+							}
+						} else {
+							moveDest = movementDestination;
+						}
 					} else {	// Findpath didnt find a valid path
 						UpdateSelectedChar (false);
 					}
@@ -130,6 +147,9 @@ public class PcController : MonoBehaviour {
 			isSelected = true;
 			this.gameObject.GetComponent<Renderer> ().material.color = Color.green;
 
+			// Highlight movement range
+			movementOverlay = gameManager.map.HighlightMovementRange(curLocation, moveSpeed);
+
 			// Deal with the camera
 			cameraScript.removeCameraTarget();
 			cameraScript.setCameraTarget (this.gameObject, true);
@@ -141,6 +161,8 @@ public class PcController : MonoBehaviour {
 			gameManager.curSelectedCharacter = null;
 			isSelected = false;
 			this.gameObject.GetComponent<Renderer> ().material.color = Color.gray;
+			moveDest = null;
+			Destroy (movementOverlay);
 
 			// Deal with the camera
 			cameraScript.removeCameraTarget();
