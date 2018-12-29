@@ -75,11 +75,11 @@ public class PcController : MonoBehaviour {
 							if (moveDest == movementDestination) {
 								isMoving = true; 
 								gameManager.curGameState = GameManager.GameState.InputLocked;
-							} else {
-								moveDest = null;
-								UpdateSelectedChar (false);
+							} else {	// User clicked on a different tile than the original choice
+								gameManager.map.UpdateSelectedOverlayTile(moveDest, movementDestination);
+								moveDest = movementDestination;
 							}
-						} else {
+						} else { // User clicked on a valid tile and moveDest was not set
 							moveDest = movementDestination;
 						}
 					} else {	// Findpath didnt find a valid path

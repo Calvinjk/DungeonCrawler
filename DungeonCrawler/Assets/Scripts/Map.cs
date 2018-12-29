@@ -124,4 +124,12 @@ public class Map : MonoBehaviour {
 		}
 		return movementOverlay;
 	}
+
+	public void UpdateSelectedOverlayTile(Tile prev, Tile next){
+		GameObject overlayTile = GameObject.Find ("MoveOverlay(" + prev.location.x + "," + prev.location.y + ")");
+		overlayTile.GetComponent<Renderer> ().material = Resources.Load ("Materials/MovementOverlayMaterial") as Material;
+
+		overlayTile = GameObject.Find ("MoveOverlay(" + next.location.x + "," + next.location.y + ")");
+		overlayTile.GetComponent<Renderer> ().material = Resources.Load ("Materials/MovementOverlayConfirmMaterial") as Material;
+	}
 }
