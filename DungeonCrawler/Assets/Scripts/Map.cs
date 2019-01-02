@@ -8,6 +8,12 @@ public class Map : MonoBehaviour {
 	public int ySize = 10;
 	public float overlayVerticalOffset = 0.051f;
 
+	// TODO - Sterilize inputs here
+	public void SetMapSize(int x, int y){
+		xSize = x;
+		ySize = y;
+	}
+
 	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance){
 		// Create the two containers necessary for the pathing algorithm
 		Heap<Tile> openSet = new Heap<Tile> (xSize * ySize);

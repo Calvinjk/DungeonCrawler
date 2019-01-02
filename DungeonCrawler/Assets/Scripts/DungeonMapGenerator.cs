@@ -4,9 +4,8 @@ using UnityEngine;
 
 public class DungeonMapGenerator : MonoBehaviour {
 
-	public int maxXDimension = 10;  // Max size of the dungeon floor in the X direction
-	public int maxZDimension = 10;  // Max size of the dungeon floor in the Z direction
-	public int maxHeight = 1;       // Max height of the stackable floor tiles
+	public const int defaultXDimension = 100;  // Default size of the dungeon floor in the X direction
+	public const int defaultZDimension = 100;  // Default size of the dungeon floor in the Z direction
 
 	public GameObject floorTile;	// Prefab of a floor tile model to generate.  
 
@@ -15,34 +14,18 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 	public bool _____________________;
 
-	public enum DungeonType {Square};
-
-	// Default map generator uses default values for dimensions and height
-	public Map GenerateMap(DungeonType layout){
+	// This function will generate a map given some dimensions
+	public Map GenerateMap(int xSize = defaultXDimension, int ySize = defaultZDimension){
 		// Create an empty parent object for the map
 		GameObject map = new GameObject("Map");	
 		map.transform.position = new Vector3(0f, 0f, 0f);
-		map.AddComponent<Map> ();
+		Map mapScript = map.AddComponent<Map> ();
+		mapScript.SetMapSize (xSize, ySize);
 
-		// Switch case based on the layout of map desired
-		switch (layout){
-		// Square layouts will have equal dimensions in the X and Z directions
-		case (DungeonType.Square):
-			map.GetComponent<Map> ().tileMap = GenerateSquareMap (map);
-			return map.GetComponent<Map>();
-		default:  // If the code reaches this default block, something went wrong and we should show an error while returning an empty map
-			Debug.LogError ("Invalid DungeonType passed into map generator");
-			return null;
-		}
-	}
+		Tile[,] tiles = new Tile[xSize, ySize];
 
-	// This function will generate a square map given a parent object to put all the pieces under
-	Tile[,] GenerateSquareMap(GameObject map){
-		Tile[,] tiles = new Tile[maxXDimension, maxXDimension];
-
-		// I will use maxXDimension here exclusively due to both dimensions being equal on a square map
-		for (int i = 0; i < maxXDimension; ++i) {
-			for (int j = 0; j < maxXDimension; ++j) {
+		for (int i = 0; i < xSize; ++i) {
+			for (int j = 0; j < ySize; ++j) {
 
 				// Create a tile and give it a name based on its location
 				GameObject curTileObject = Instantiate (floorTile, new Vector3(i, 0, j), Quaternion.identity) as GameObject;
@@ -58,21 +41,13 @@ public class DungeonMapGenerator : MonoBehaviour {
 					curTileObject.GetComponent<Renderer>().material = lightTexture;
 				}
 
-				// For testing, I am hard-coding in a few "obstructions"
-				if ((i == 4 && j == 4) 
-					|| (i == 1 && j == 8) 
-					|| (i == 2 && j == 7) || (i == 2 && j == 6) || (i == 2 && j == 5)
-					|| (i == 3 && j == 5) || (i == 4 && j == 5) || (i == 5 && j == 5)){
-					curTileObject.GetComponent<Renderer> ().material.color = Color.red;
-					newTile.curTileState = Tile.TileState.Obstructed;
-				}
-
-				// Add the generated tile to the tiles array and set the object's parent to the passed-in parameter.
+				// Add the generated tile to the tiles array and set the object's parent to the map GameObject
 				tiles[i, j] = newTile;
 				curTileObject.transform.SetParent(map.transform);
 			}
 		} 
-			
-		return tiles;
+
+		mapScript.tileMap = tiles;
+		return mapScript;
 	}
 }
