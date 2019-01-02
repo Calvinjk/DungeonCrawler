@@ -16,35 +16,39 @@ public class Map : MonoBehaviour {
 
 	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance){
 		// Create the two containers necessary for the pathing algorithm
-		Heap<Tile> openSet = new Heap<Tile> (xSize * ySize);
-		HashSet<Tile> closedSet = new HashSet<Tile> ();
+		Heap<PathingTile> openSet = new Heap<PathingTile> (xSize * ySize);
+		HashSet<PathingTile> closedSet = new HashSet<PathingTile> ();
 
-		// Start off by adding the current location to the openSet
-		startTile.pathWeight = 0;
-		openSet.Add (startTile);
+		// Create PathingTile equivalent of the startTile
+		PathingTile startPath = new PathingTile(startTile);
+
+		// Start off by adding the starting location to the openSet
+		openSet.Add (startPath);
 
 		// Loop until the openSet is empty or a path has been found
 		while (openSet.Count > 0) {
 			// Due to our beautiful heap, currentTile is the tile with the current shortest path
-			Tile currentTile = openSet.RemoveFirst();
+			PathingTile currentTile = openSet.RemoveFirst();
 			closedSet.Add (currentTile);
 
 			// Wow we found the path!  killer.
-			if (currentTile == targetTile) {
-				return RetracePath(startTile, targetTile);
+			if (currentTile.location == targetTile.location) {
+				return RetracePath(startPath, currentTile);
 			}
+				
+			foreach (Tile neighbor in GetNeighbors(tileMap [currentTile.location.x, currentTile.location.y])) {
+				PathingTile neighborTile = new PathingTile (neighbor);
 
-			foreach (Tile neighbor in GetNeighbors(currentTile)) {
 				// If we cant walk on it or if we have already checked it, dont add it again to the openSet
-				if (neighbor.curTileState == Tile.TileState.Enemy || neighbor.curTileState == Tile.TileState.Obstructed || closedSet.Contains(neighbor)) {
+				if (neighbor.curTileState == Tile.TileState.Enemy || neighbor.curTileState == Tile.TileState.Obstructed || closedSet.Contains(neighborTile)) {
 					continue;
 				}
 
-				int newCostToNeighbor = currentTile.pathWeight + GetTravelCost (currentTile, neighbor);
-				if (newCostToNeighbor <= maxDistance && (newCostToNeighbor < neighbor.pathWeight || !openSet.Contains (neighbor))) {
-					neighbor.pathWeight = newCostToNeighbor;
-					neighbor.parent = currentTile;
-					openSet.Add (neighbor);
+				int newCostToNeighbor = currentTile.pathWeight + GetTravelCost (tileMap [currentTile.location.x, currentTile.location.y], neighbor);
+				if (newCostToNeighbor <= maxDistance && (newCostToNeighbor < neighborTile.pathWeight || !openSet.Contains (neighborTile))) {
+					neighborTile.pathWeight = newCostToNeighbor;
+					neighborTile.parent = currentTile;
+					openSet.Add (neighborTile);
 				}
 			}
 		}
@@ -53,13 +57,13 @@ public class Map : MonoBehaviour {
 		return null;
 	}
 
-	List<Tile> RetracePath(Tile start, Tile end){
+	List<Tile> RetracePath(PathingTile start, PathingTile end){
 		List<Tile> path = new List<Tile> ();
-		Tile currentTile = end;
+		PathingTile currentTile = end;
 
 		// Trace backwards and add all the tiles to path
 		while (currentTile != start) {
-			path.Add (currentTile);
+			path.Add (tileMap[currentTile.location.x, currentTile.location.y]);
 			currentTile = currentTile.parent;
 		}
 
