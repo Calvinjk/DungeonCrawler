@@ -19,14 +19,11 @@ public class DungeonMapGenerator : MonoBehaviour {
 		// Create an empty parent object for the map
 		GameObject map = new GameObject("Map");	
 		map.transform.position = new Vector3(0f, 0f, 0f);
-		map.AddComponent<Map> ();
-		Map mapScript = map.GetComponent<Map> ();
-		mapScript.xSize = xSize;
-		mapScript.ySize = ySize;
+		Map mapScript = map.AddComponent<Map> ();
+		mapScript.SetMapSize (xSize, ySize);
 
 		Tile[,] tiles = new Tile[xSize, ySize];
 
-		// I will use maxXDimension here exclusively due to both dimensions being equal on a square map
 		for (int i = 0; i < xSize; ++i) {
 			for (int j = 0; j < ySize; ++j) {
 
@@ -44,7 +41,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 					curTileObject.GetComponent<Renderer>().material = lightTexture;
 				}
 
-				// Add the generated tile to the tiles array and set the object's parent to the passed-in parameter.
+				// Add the generated tile to the tiles array and set the object's parent to the map GameObject
 				tiles[i, j] = newTile;
 				curTileObject.transform.SetParent(map.transform);
 			}
