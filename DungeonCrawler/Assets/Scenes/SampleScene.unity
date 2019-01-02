@@ -177,7 +177,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1001 &1089089257
 Prefab:
@@ -216,7 +216,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4406850751807274, guid: c1548a0f5276fb342bf59d1e7c9cd1c4, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 20633402733532594, guid: c1548a0f5276fb342bf59d1e7c9cd1c4,
         type: 2}
@@ -319,8 +319,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorTile: {fileID: 1574912612369474, guid: 6b711d1aa5805a543984159f99ad9f63, type: 2}
-  darkTexture: {fileID: 2100000, guid: 0bdecd1a5942168479988797e71ca954, type: 2}
-  lightTexture: {fileID: 2100000, guid: de452718d4bf7d347bf5b2c64550d0e7, type: 2}
+  generationDebugLogs: 1
+  minRoomRadius: 2
+  maxRoomRadius: 10
   _____________________: 0
 --- !u!4 &1172607543
 Transform:
@@ -328,12 +329,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1172607541}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1384927372
 Prefab:
@@ -372,7 +373,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4192760281535032, guid: 51896a2df9663f247bcdfd3624b011d4, type: 2}
       propertyPath: m_RootOrder
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 114078563921923828, guid: 51896a2df9663f247bcdfd3624b011d4,
         type: 2}

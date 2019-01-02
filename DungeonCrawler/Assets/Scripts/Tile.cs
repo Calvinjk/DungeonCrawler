@@ -9,7 +9,8 @@ public class Tile : MonoBehaviour {
 		Enemy,
 		Obstructed,
 		Open,
-		Ungenerated
+		Ungenerated,
+		Wall
 	};
 		
 	public bool ________________;
