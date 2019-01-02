@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class DungeonMapGenerator : MonoBehaviour {
 
-	public const int defaultXDimension = 100;  // Default size of the dungeon floor in the X direction
-	public const int defaultZDimension = 100;  // Default size of the dungeon floor in the Z direction
+	public const int XDIMDEFAULT = 100;  // Default size of the dungeon floor in the X direction
+	public const int YDIMDEFAULT = 100;  // Default size of the dungeon floor in the Z direction
 
 	public GameObject floorTile;	// Prefab of a floor tile model to generate.  
 
@@ -15,7 +15,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 	public bool _____________________;
 
 	// This function will generate a map given some dimensions
-	public Map GenerateMap(int xSize = defaultXDimension, int ySize = defaultZDimension){
+	public Map GenerateMap(int xSize = XDIMDEFAULT, int ySize = YDIMDEFAULT){
 		// Create an empty parent object for the map
 		GameObject map = new GameObject("Map");	
 		map.transform.position = new Vector3(0f, 0f, 0f);
@@ -34,14 +34,8 @@ public class DungeonMapGenerator : MonoBehaviour {
 				// When instantiating a Tile, attach a Tile script to it and set variables
 				Tile tileScript = curTileObject.AddComponent<Tile>();
 				tileScript.location = new Vector2Int (i, j);
-				tileScript.curTileState = Tile.TileState.Open;
-
-				// This if block checkerboards the textures so we can clearly see tiles.  Mostly for testing purposes.
-				if ((i + j) % 2 == 0) {
-					curTileObject.GetComponent<Renderer>().material = darkTexture;
-				} else {
-					curTileObject.GetComponent<Renderer>().material = lightTexture;
-				}
+				tileScript.curTileState = Tile.TileState.Ungenerated;
+				curTileObject.GetComponent<Renderer> ().material.color = Color.yellow;	// Testing visual for an ungenerated tile
 
 				// Add the generated tile to the tiles array and set the object's parent to the map GameObject
 				tiles[i, j] = tileScript;
@@ -49,7 +43,9 @@ public class DungeonMapGenerator : MonoBehaviour {
 			}
 		} 
 
+		// Now that all the tiles are created, assign them
 		mapScript.tileMap = tiles;
+
 		return mapScript;
 	}
 }
