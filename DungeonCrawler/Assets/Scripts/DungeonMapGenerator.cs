@@ -31,8 +31,10 @@ public class DungeonMapGenerator : MonoBehaviour {
 				GameObject curTileObject = Instantiate (floorTile, new Vector3(i, 0, j), Quaternion.identity) as GameObject;
 				curTileObject.name = "(" + i + ", " + j + ")";
 
-				// When instantiating a Tile, set its location.  Currently we do not need to mess with any of the other member variables, but that may change.
-				Tile newTile = new Tile(new Vector2Int (i, j));
+				// When instantiating a Tile, attach a Tile script to it and set variables
+				Tile tileScript = curTileObject.AddComponent<Tile>();
+				tileScript.location = new Vector2Int (i, j);
+				tileScript.curTileState = Tile.TileState.Open;
 
 				// This if block checkerboards the textures so we can clearly see tiles.  Mostly for testing purposes.
 				if ((i + j) % 2 == 0) {
@@ -42,7 +44,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 				}
 
 				// Add the generated tile to the tiles array and set the object's parent to the map GameObject
-				tiles[i, j] = newTile;
+				tiles[i, j] = tileScript;
 				curTileObject.transform.SetParent(map.transform);
 			}
 		} 
