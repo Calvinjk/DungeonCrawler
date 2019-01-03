@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// All generated rooms will be an odd number of tiles in dimensions to allow for a central door
+// All generated rooms will be an odd number of tiles in at least one dimension to allow for a central door
 public class DungeonMapGenerator : MonoBehaviour {
 	public GameObject floorTile;	// Prefab of a floor tile model to generate.  
 
@@ -10,9 +10,9 @@ public class DungeonMapGenerator : MonoBehaviour {
 	[Tooltip("Toggles debug logs for map generation")]
 	public bool generationDebugLogs = true;
 
-	[Tooltip("Smallest dimension a room can have.  Lower than 3 can generate a room that has no walkable space")]
+	[Tooltip("Smallest dimension a room can have.  Includes walls")]
 	public int minRoomDiameter = 3;
-	[Tooltip("Largest dimension a room can have")]
+	[Tooltip("Largest dimension a room can have.  Includes walls")]
 	public int maxRoomDiameter = 20;
 
 	[Tooltip("Number of failed attempts to place a major feature until generator believes it is done")]
@@ -23,7 +23,11 @@ public class DungeonMapGenerator : MonoBehaviour {
 	public const int XDIMDEFAULT = 100;  // Default size of the dungeon floor in the X direction
 	public const int YDIMDEFAULT = 100;  // Default size of the dungeon floor in the Z direction
 
+	public int mapXSize;
+	public int mapYSize;
+
 	public int curRoomAttempts = 0;
+	List<Tile> potentialDoorTiles;
 
 	Tile[,] tiles;
 
@@ -37,8 +41,15 @@ public class DungeonMapGenerator : MonoBehaviour {
 		West	// -x
 	}
 
+	void Awake(){
+		potentialDoorTiles = new List<Tile> ();
+	}
+
 	// This function will generate a map given some dimensions
 	public Map GenerateMap(int xSize = XDIMDEFAULT, int ySize = YDIMDEFAULT){
+		mapXSize = xSize;
+		mapYSize = ySize;
+
 		// Create an empty parent object for the map
 		GameObject map = new GameObject("Map");	
 		map.transform.position = new Vector3(0f, 0f, 0f);
@@ -72,9 +83,54 @@ public class DungeonMapGenerator : MonoBehaviour {
 		// Create the initial room in the center (ish)
 		int xLength = Random.Range(minRoomDiameter, maxRoomDiameter + 1) / 2;
 		int yLength = Random.Range (minRoomDiameter, maxRoomDiameter + 1);
-		GenerateRoom((xSize / 2) - (xLength / 2), (ySize / 2) - (yLength / 2), xLength, yLength, Direction.North);
 
-		// TODO - Keep generating stuff!
+		if (generationDebugLogs){ 
+			Debug.Log ("Placing starting room at (" + ((xSize / 2) - (xLength / 2)) + "," + ((ySize / 2) - (yLength / 2)) + ")...\n" +
+				"Dimensions of " + (xLength * 2 + 1) + "x" + yLength + "...\n" +
+				"Direction: " + Direction.North);
+		}
+
+		for (int i = -xLength; i <= xLength; ++i) {
+			for (int j = 0; j < yLength; ++j) {
+				Tile curTile = tiles [((xSize / 2) - (xLength / 2)) + i, ((ySize / 2) - (yLength / 2)) + j];
+				if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+					curTile.curTileState = Tile.TileState.Wall;
+					curTile.gameObject.GetComponent<Renderer> ().material.color = Color.grey;
+
+					if (!((i == -xLength && j == 0)
+						|| (i == -xLength && j == yLength)
+						|| (i == xLength && j == 0)
+						|| (i == xLength && j == yLength))) {
+						potentialDoorTiles.Add (curTile);
+					}
+				} else {
+					curTile.curTileState = Tile.TileState.Open;
+					curTile.gameObject.GetComponent<Renderer> ().material.color = Color.white;
+				}
+			}
+		}
+
+		// Keep going!
+		while (curRoomAttempts < maxAttempts){
+			// Re-randomize the size variables
+			xLength = Random.Range(minRoomDiameter, maxRoomDiameter + 1) / 2;
+			yLength = Random.Range(minRoomDiameter, maxRoomDiameter + 1);
+
+			// Try to make a new room!
+			if (potentialDoorTiles.Count == 0) {
+				Debug.LogError ("Somehow ran out of valid wall tiles to create a door on");
+			} else {
+				int index = Random.Range (0, potentialDoorTiles.Count);
+
+				Tile curTile = potentialDoorTiles [index]; 
+				potentialDoorTiles.RemoveAt (index);
+
+				// Determine which direction we should go in (There should only be one)
+				Direction direction = GetRoomDirection(curTile);
+
+				GenerateRoom (curTile.location.x, curTile.location.y, xLength, yLength, direction);
+			}
+		}
 
 		return mapScript;
 	}
@@ -97,26 +153,81 @@ public class DungeonMapGenerator : MonoBehaviour {
 				for (int j = 0; j < yLength; ++j) {
 					Tile curTile;
 
-					switch (direction) {
-					case Direction.North:
-						curTile = tiles [xLocation + i, yLocation + j];
-						if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-							curTile.curTileState = Tile.TileState.Wall;
-							curTile.gameObject.GetComponent<Renderer> ().material.color = Color.grey;
+					// A door is a door regardless of the direction
+					if (i == 0 && j == 0) {
+						curTile = tiles [xLocation, yLocation];
+
+						// The previous state of the tile should be a wall, but now its a door!
+						if (curTile.curTileState == Tile.TileState.Wall) {
+							SetDoor (curTile);
 						} else {
-							curTile.curTileState = Tile.TileState.Open;
-							curTile.gameObject.GetComponent<Renderer> ().material.color = Color.white;
+							Debug.LogError("Tried to create a door on a non-wall tile");
+							return;
 						}
-						break;
-					case Direction.South:
+					} else {
+						switch (direction) {
+						case Direction.North:
+							curTile = tiles [xLocation + i, yLocation + j];
+							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+								SetWall (curTile);
 
-						break;
-					case Direction.East:
+								// If this wall tile is NOT a corner, add it to potential list of new doors
+								if (!((i == -xLength && j == 0)
+								    || (i == -xLength && j == yLength)
+								    || (i == xLength && j == 0)
+								    || (i == xLength && j == yLength))) {
+									potentialDoorTiles.Add (curTile);
+								}
+							} else {
+								SetFloor (curTile);
+							}
+							break;
+						case Direction.South:
+							curTile = tiles [xLocation + i, yLocation - j];
+							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+								SetWall (curTile);
 
-						break;
-					case Direction.West:
-
-						break;
+								if (!((i == -xLength && j == 0)
+									|| (i == -xLength && j == yLength)
+									|| (i == xLength && j == 0)
+									|| (i == xLength && j == yLength))) {
+									potentialDoorTiles.Add (curTile);
+								}
+							} else {
+								SetFloor (curTile);
+							}
+							break;
+						case Direction.East:
+							curTile = tiles [xLocation + j, yLocation + i];
+							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+								SetWall (curTile);
+							
+								if (!((i == -xLength && j == 0)
+									|| (i == -xLength && j == yLength)
+									|| (i == xLength && j == 0)
+									|| (i == xLength && j == yLength))) {
+									potentialDoorTiles.Add (curTile);
+								}
+							} else {
+								SetFloor (curTile);
+							}
+							break;
+						case Direction.West:
+							curTile = tiles [xLocation - j, yLocation + i];
+							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+								SetWall (curTile);
+							
+								if (!((i == -xLength && j == 0)
+									|| (i == -xLength && j == yLength)
+									|| (i == xLength && j == 0)
+									|| (i == xLength && j == yLength))) {
+									potentialDoorTiles.Add (curTile);
+								}
+							} else {
+								SetFloor (curTile);
+							}
+							break;
+						}
 					}
 				}
 			}
@@ -133,92 +244,136 @@ public class DungeonMapGenerator : MonoBehaviour {
 		each of my comments 4 times, I will write the general logic up here and only comment the north direction:
 
 		1: 		Iterate through each tile that would be involved in the room we are making, walls included.
-		2: 		If even one tile that we check is NOT a ungenerated tile, return false as it overlaps with an existing room
-		2.1: 	If we find an existing wall tile in a place we WOULD put a wall tile, allow it as we are ok with "shared" walls
-		2.2:	If we find an existing wall tile in a place we WOULD NOT put a wall, return false
-		3: 		If the loop makes it all the way through without returning false it has checked every tile!
+		2:		If our current tile is off the map, return false.
+		3: 		If even one tile that we check is NOT a ungenerated tile, return false as it overlaps with an existing room
+		3.1: 	If we find an existing wall tile in a place we WOULD put a wall tile, allow it as we are ok with "shared" walls
+		3.2:	If we find an existing wall tile in a place we WOULD NOT put a wall, return false
+		4: 		If the loop makes it all the way through without returning false it has checked every tile!
 		*/
 		for (int i = -xLength; i <= xLength; ++i) {
 			for (int j = 0; j < yLength; ++j) {
+				Tile curTile;
+
 				switch (direction) {
 				case Direction.North:
-					// Check if this tile is ungenerated
-					if (tiles[xLocation + i, yLocation + j].curTileState != Tile.TileState.Ungenerated){
-						// If this tile as already been generated, check if it is a wall
-						if (tiles [xLocation +i, yLocation + j].curTileState != Tile.TileState.Wall) {
+					// Check if this tile is on the map
+					if (IsInMapBoundaries(xLocation + i, yLocation + j)) {
 
-							// If the tile is no a wall, we have overlap and should return false
-							if (generationDebugLogs) {
-								Debug.Log ("Result: False");
-							}
-							return false;
-						} else {
-							// If we have reached this point, we found a wall.  Now check if our current room would also put a wall there
-							if (Mathf.Abs(i) == xLength || j == 0 || j == (yLength - 1)){
-								// Cool, this would also be a wall!  Allow it!
-							} else {
-								// Bad.  We wouldnt put a wall here.  That means something will be overlapping!
+						curTile = tiles [xLocation + i, yLocation + j];
+						// Check if this tile is ungenerated
+						if (curTile.curTileState != Tile.TileState.Ungenerated) {
+							// If this tile as already been generated, check if it is a wall
+							if (curTile.curTileState != Tile.TileState.Wall) {
+
+								// If the tile is not a wall, we have overlap and should return false
 								if (generationDebugLogs) {
-									Debug.Log ("Result: False");
+									Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation+ j) + ")");
 								}
 								return false;
+							} else {
+								// If we have reached this point, we found a wall.  Now check if our current room would also put a wall there
+								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+									// Cool, this would also be a wall!  Allow it!
+								} else {
+									// Bad.  We wouldnt put a wall here.  That means something will be overlapping!
+									if (generationDebugLogs) {
+										Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation + j) + ")");
+									}
+									return false;
+								}
 							}
 						}
+					} else {
+						// This room goes past the edge of the map!
+						if (generationDebugLogs) {
+							Debug.Log ("Result: False (Room would extend past map boundaries)");
+						}
+						return false;
 					}
 					break;
 				case Direction.South:
-					if (tiles [xLocation + i, yLocation - j].curTileState != Tile.TileState.Ungenerated) {
-						if (tiles [xLocation + i, yLocation - j].curTileState != Tile.TileState.Wall) {
-							if (generationDebugLogs) {
-								Debug.Log ("Result: False");
-							}
-							return false;
-						} else {
-							if (Mathf.Abs(i) == xLength || j == 0 || j == (yLength - 1)){
-							} else {
+					if (IsInMapBoundaries(xLocation + i, yLocation - j)) {
+
+						curTile = tiles [xLocation + i, yLocation - j];
+						if (curTile.curTileState != Tile.TileState.Ungenerated) {
+							if (curTile.curTileState != Tile.TileState.Wall) {
 								if (generationDebugLogs) {
-									Debug.Log ("Result: False");
+									Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation - j) + ")");
 								}
 								return false;
+							} else {
+								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+								} else {
+									if (generationDebugLogs) {
+										Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation - j) + ")");
+									}
+									return false;
+								}
 							}
 						}
+					} else {
+						// This room goes past the edge of the map!
+						if (generationDebugLogs) {
+							Debug.Log ("Result: False (Room would extend past map boundaries)");
+						}
+						return false;
 					}
 					break;
 				case Direction.East:
-					if (tiles [yLocation + j, xLocation + i].curTileState != Tile.TileState.Ungenerated) {
-						if (tiles [yLocation + j, xLocation + i].curTileState != Tile.TileState.Wall) {
-							if (generationDebugLogs) {
-								Debug.Log ("Result: False");
-							}	
-							return false;
-						} else {
-							if (Mathf.Abs(i) == xLength || j == 0 || j == (yLength - 1)){
-							} else {
+					if (IsInMapBoundaries(xLocation + j, yLocation + i)) {
+
+						curTile = tiles [xLocation + j, yLocation + i];
+						if (curTile.curTileState != Tile.TileState.Ungenerated) {
+							if (curTile.curTileState != Tile.TileState.Wall) {
 								if (generationDebugLogs) {
-									Debug.Log ("Result: False");
-								}
+									Debug.Log ("Result: False...Overlap at (" + (xLocation + j) + "," + (yLocation + i) + ")");
+								}	
 								return false;
+							} else {
+								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+								} else {
+									if (generationDebugLogs) {
+										Debug.Log ("Result: False...Overlap at (" + (xLocation + j) + "," + (yLocation + i) + ")");
+									}
+									return false;
+								}
 							}
 						}
+					} else {
+						// This room goes past the edge of the map!
+						if (generationDebugLogs) {
+							Debug.Log ("Result: False (Room would extend past map boundaries)");
+						}
+						return false;
 					}
 					break;
 
 				case Direction.West:
-					if (tiles [yLocation - j, xLocation + i].curTileState != Tile.TileState.Ungenerated) {
-						if (tiles [yLocation - j, xLocation + i].curTileState != Tile.TileState.Wall) {
-							if (generationDebugLogs) {
-								Debug.Log ("Result: False");
-							}
-							return false;
-						} else {
-							if (Mathf.Abs(i) == xLength || j == 0 || j == (yLength - 1)){
-							} else {
+					if (IsInMapBoundaries(xLocation - j, yLocation + i)) {
+
+						curTile = tiles [xLocation - j, yLocation + i];
+						if (curTile.curTileState != Tile.TileState.Ungenerated) {
+							if (curTile.curTileState != Tile.TileState.Wall) {
 								if (generationDebugLogs) {
-									Debug.Log ("Result: False");
+									Debug.Log ("Result: False...Overlap at (" + (xLocation - j) + "," + (yLocation + i) + ")");
 								}
 								return false;
-							}
-						}	
+							} else {
+								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+								} else {
+									if (generationDebugLogs) {
+										Debug.Log ("Result: False...Overlap at (" + (xLocation - j) + "," + (yLocation + i) + ")");
+									}
+									return false;
+								}
+							}	
+						}
+					} else {
+						// This room goes past the edge of the map!
+						if (generationDebugLogs) {
+							Debug.Log ("Result: False (Room would extend past map boundaries)");
+						}
+						return false;
 					}
 					break;
 				}
@@ -227,5 +382,44 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 		if (generationDebugLogs) { Debug.Log ("Result: True"); }
 		return true;
+	}
+
+	Direction GetRoomDirection(Tile door){
+		if (IsInMapBoundaries (door.location.x, door.location.y + 1) &&
+		    tiles [door.location.x, door.location.y + 1].curTileState == Tile.TileState.Ungenerated) {
+			return Direction.North;
+		} else if (IsInMapBoundaries (door.location.x, door.location.y - 1) &&
+		           tiles [door.location.x, door.location.y - 1].curTileState == Tile.TileState.Ungenerated) { 
+			return Direction.South;
+		} else if (IsInMapBoundaries (door.location.x + 1, door.location.y) &&
+		           tiles [door.location.x + 1, door.location.y].curTileState == Tile.TileState.Ungenerated) {
+			return Direction.East;
+		} else if (IsInMapBoundaries (door.location.x - 1, door.location.y) &&
+		           tiles [door.location.x - 1, door.location.y].curTileState == Tile.TileState.Ungenerated) {
+			return Direction.West;
+		}
+		if (generationDebugLogs) {
+			Debug.Log ("No valid direction to place room");
+		}
+		return Direction.North;
+	}
+
+	bool IsInMapBoundaries(int x, int y){
+		return (y >= 0 && y < mapXSize && x >= 0 && x < mapYSize);
+	}
+
+	void SetWall(Tile tile){
+		tile.curTileState = Tile.TileState.Wall;
+		tile.gameObject.GetComponent<Renderer> ().material.color = Color.grey;
+	}
+
+	void SetFloor(Tile tile){
+		tile.curTileState = Tile.TileState.Open;
+		tile.gameObject.GetComponent<Renderer> ().material.color = Color.white;
+	}
+
+	void SetDoor(Tile tile){
+		tile.curTileState = Tile.TileState.Door;
+		tile.gameObject.GetComponent<Renderer> ().material.color = Color.magenta;
 	}
 }

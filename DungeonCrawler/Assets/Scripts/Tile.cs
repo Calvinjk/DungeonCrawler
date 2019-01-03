@@ -6,6 +6,7 @@ public class Tile : MonoBehaviour {
 
 	public enum TileState {
 		Ally,
+		Door,
 		Enemy,
 		Obstructed,
 		Open,

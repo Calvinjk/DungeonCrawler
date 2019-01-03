@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour {
 
 	void Start(){
 		// Start the game off by generating a room
-		map = generatorScript.GenerateMap();
+		map = generatorScript.GenerateMap(50, 50);
 	}
 
 	void Update(){
