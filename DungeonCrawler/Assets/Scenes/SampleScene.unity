@@ -320,9 +320,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   floorTile: {fileID: 1574912612369474, guid: 6b711d1aa5805a543984159f99ad9f63, type: 2}
   generationDebugLogs: 1
-  minRoomRadius: 2
-  maxRoomRadius: 10
+  minRoomDiameter: 3
+  maxRoomDiameter: 20
+  maxAttempts: 100
   _____________________: 0
+  curRoomAttempts: 0
 --- !u!4 &1172607543
 Transform:
   m_ObjectHideFlags: 0
