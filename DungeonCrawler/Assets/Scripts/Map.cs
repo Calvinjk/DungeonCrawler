@@ -14,6 +14,17 @@ public class Map : MonoBehaviour {
 		ySize = y;
 	}
 
+	HashSet<Tile.TileState> nonWalkableTiles;
+
+	void Start(){
+		// Define which set of tiles cannot be stepped on
+		nonWalkableTiles = new HashSet<Tile.TileState> ();
+		nonWalkableTiles.Add (Tile.TileState.Wall);
+		nonWalkableTiles.Add (Tile.TileState.Enemy);
+		nonWalkableTiles.Add (Tile.TileState.Ungenerated);
+		nonWalkableTiles.Add (Tile.TileState.Obstructed);
+	}
+
 	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance){
 		// Create the two containers necessary for the pathing algorithm
 		Heap<PathingTile> openSet = new Heap<PathingTile> (xSize * ySize);
@@ -40,7 +51,7 @@ public class Map : MonoBehaviour {
 				PathingTile neighborTile = new PathingTile (neighbor);
 
 				// If we cant walk on it or if we have already checked it, dont add it again to the openSet
-				if (neighbor.curTileState == Tile.TileState.Enemy || neighbor.curTileState == Tile.TileState.Obstructed || closedSet.Contains(neighborTile)) {
+				if (nonWalkableTiles.Contains(neighbor.curTileState) || closedSet.Contains(neighborTile)) {
 					continue;
 				}
 
