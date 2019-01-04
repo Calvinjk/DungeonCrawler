@@ -26,7 +26,21 @@ public class GameManager : MonoBehaviour {
 	public CameraController cameraScript;
 	public DungeonMapGenerator generatorScript;
 
+	public HashSet<Tile.TileState> nonWalkableTiles;
+	public HashSet<Tile.TileState> passThroughOnlyTiles;
+
 	void Start(){
+		// Define which set of tiles cannot be stepped on
+		nonWalkableTiles = new HashSet<Tile.TileState> ();
+		nonWalkableTiles.Add (Tile.TileState.Wall);
+		nonWalkableTiles.Add (Tile.TileState.Enemy);
+		nonWalkableTiles.Add (Tile.TileState.Ungenerated);
+		nonWalkableTiles.Add (Tile.TileState.Obstructed);
+
+		// Define which set of tiles can be pathed through, but not ended on
+		passThroughOnlyTiles = new HashSet<Tile.TileState>();
+		passThroughOnlyTiles.Add (Tile.TileState.Ally);
+
 		// Start the game off by generating a room
 		map = generatorScript.GenerateMap(50, 50);
 	}
