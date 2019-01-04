@@ -147,7 +147,8 @@ public class DungeonMapGenerator : MonoBehaviour {
 						} else {
 							// This should be the first room.
 							if (generationDebugLogs){
-								Debug.Log ("Creating first room");
+								Debug.Log ("Creating first room starting point");
+								SetWall (curTile);
 							}
 						}
 					} else {
@@ -158,10 +159,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 								SetWall (curTile);
 
 								// If this wall tile is NOT a corner, add it to potential list of new doors
-								if (!((i == -xLength && j == 0)
-									|| (i == -xLength && j == (yLength - 1))
-								    || (i == xLength && j == 0)
-									|| (i == xLength && j == (yLength - 1)))) {
+								if (!IsCorner(i, j, xLength, yLength)){
 									potentialDoorTiles.Add (curTile);
 								}
 							} else {
@@ -173,10 +171,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
 								SetWall (curTile);
 
-								if (!((i == -xLength && j == 0)
-									|| (i == -xLength && j == (yLength - 1))
-									|| (i == xLength && j == 0)
-									|| (i == xLength && j == (yLength - 1)))) {
+								if (!IsCorner(i, j, xLength, yLength)) {
 									potentialDoorTiles.Add (curTile);
 								}
 							} else {
@@ -188,10 +183,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
 								SetWall (curTile);
 							
-								if (!((i == -xLength && j == 0)
-									|| (i == -xLength && j == (yLength - 1))
-									|| (i == xLength && j == 0)
-									|| (i == xLength && j == (yLength - 1)))) {
+								if (!IsCorner(i, j, xLength, yLength)) {
 									potentialDoorTiles.Add (curTile);
 								}
 							} else {
@@ -203,10 +195,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
 								SetWall (curTile);
 							
-								if (!((i == -xLength && j == 0)
-									|| (i == -xLength && j == (yLength - 1))
-									|| (i == xLength && j == 0)
-									|| (i == xLength && j == (yLength - 1)))) {
+								if (!IsCorner(i, j, xLength, yLength)) {
 									potentialDoorTiles.Add (curTile);
 								}
 							} else {
@@ -392,6 +381,13 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 	bool IsInMapBoundaries(int x, int y){
 		return (y >= 0 && y < mapXSize && x >= 0 && x < mapYSize);
+	}
+
+	bool IsCorner(int i, int j, int xLength, int yLength){
+		return ((i == -xLength && j == 0)
+		|| (i == -xLength && j == (yLength - 1))
+		|| (i == xLength && j == 0)
+		|| (i == xLength && j == (yLength - 1)));
 	}
 
 	void SetWall(Tile tile){

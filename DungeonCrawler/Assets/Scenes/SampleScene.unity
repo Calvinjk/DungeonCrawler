@@ -319,7 +319,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   floorTile: {fileID: 1574912612369474, guid: 6b711d1aa5805a543984159f99ad9f63, type: 2}
-  generationDebugLogs: 0
+  generationDebugLogs: 1
   minRoomDiameter: 3
   maxRoomDiameter: 15
   maxAttempts: 100
