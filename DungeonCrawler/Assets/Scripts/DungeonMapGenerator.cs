@@ -135,7 +135,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 			// Good, lets generate it!
 			for (int i = -xLength; i <= xLength; ++i) {
 				for (int j = 0; j < yLength; ++j) {
-					Tile curTile;
+					Tile curTile = null;
 
 					// A door is a door regardless of the direction
 					if (i == 0 && j == 0) {
@@ -148,60 +148,34 @@ public class DungeonMapGenerator : MonoBehaviour {
 							// This should be the first room.
 							if (generationDebugLogs){
 								Debug.Log ("Creating first room starting point");
-								SetWall (curTile);
 							}
+							SetWall (curTile);
 						}
 					} else {
 						switch (direction) {
 						case Direction.North:
 							curTile = tiles [xLocation + i, yLocation + j];
-							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-								SetWall (curTile);
-
-								// If this wall tile is NOT a corner, add it to potential list of new doors
-								if (!IsCorner(i, j, xLength, yLength)){
-									potentialDoorTiles.Add (curTile);
-								}
-							} else {
-								SetFloor (curTile);
-							}
 							break;
 						case Direction.South:
 							curTile = tiles [xLocation + i, yLocation - j];
-							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-								SetWall (curTile);
-
-								if (!IsCorner(i, j, xLength, yLength)) {
-									potentialDoorTiles.Add (curTile);
-								}
-							} else {
-								SetFloor (curTile);
-							}
 							break;
 						case Direction.East:
 							curTile = tiles [xLocation + j, yLocation + i];
-							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-								SetWall (curTile);
-							
-								if (!IsCorner(i, j, xLength, yLength)) {
-									potentialDoorTiles.Add (curTile);
-								}
-							} else {
-								SetFloor (curTile);
-							}
 							break;
 						case Direction.West:
 							curTile = tiles [xLocation - j, yLocation + i];
-							if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-								SetWall (curTile);
-							
-								if (!IsCorner(i, j, xLength, yLength)) {
-									potentialDoorTiles.Add (curTile);
-								}
-							} else {
-								SetFloor (curTile);
-							}
 							break;
+						}
+
+						if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+							SetWall (curTile);
+
+							// If this wall tile is NOT a corner, add it to potential list of new doors
+							if (!IsCorner(i, j, xLength, yLength)){
+								potentialDoorTiles.Add (curTile);
+							}
+						} else {
+							SetFloor (curTile);
 						}
 					}
 				}
@@ -227,37 +201,13 @@ public class DungeonMapGenerator : MonoBehaviour {
 		*/
 		for (int i = -xLength; i <= xLength; ++i) {
 			for (int j = 0; j < yLength; ++j) {
-				Tile curTile;
+				Tile curTile = null;
 
 				switch (direction) {
 				case Direction.North:
 					// Check if this tile is on the map
 					if (IsInMapBoundaries(xLocation + i, yLocation + j)) {
-
 						curTile = tiles [xLocation + i, yLocation + j];
-						// Check if this tile is ungenerated
-						if (curTile.curTileState != Tile.TileState.Ungenerated) {
-							// If this tile as already been generated, check if it is a wall
-							if (curTile.curTileState != Tile.TileState.Wall) {
-
-								// If the tile is not a wall, we have overlap and should return false
-								if (generationDebugLogs) {
-									Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation+ j) + ")");
-								}
-								return false;
-							} else {
-								// If we have reached this point, we found a wall.  Now check if our current room would also put a wall there
-								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-									// Cool, this would also be a wall!  Allow it!
-								} else {
-									// Bad.  We wouldnt put a wall here.  That means something will be overlapping!
-									if (generationDebugLogs) {
-										Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation + j) + ")");
-									}
-									return false;
-								}
-							}
-						}
 					} else {
 						// This room goes past the edge of the map!
 						if (generationDebugLogs) {
@@ -268,26 +218,8 @@ public class DungeonMapGenerator : MonoBehaviour {
 					break;
 				case Direction.South:
 					if (IsInMapBoundaries(xLocation + i, yLocation - j)) {
-
 						curTile = tiles [xLocation + i, yLocation - j];
-						if (curTile.curTileState != Tile.TileState.Ungenerated) {
-							if (curTile.curTileState != Tile.TileState.Wall) {
-								if (generationDebugLogs) {
-									Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation - j) + ")");
-								}
-								return false;
-							} else {
-								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-								} else {
-									if (generationDebugLogs) {
-										Debug.Log ("Result: False...Overlap at (" + (xLocation + i) + "," + (yLocation - j) + ")");
-									}
-									return false;
-								}
-							}
-						}
 					} else {
-						// This room goes past the edge of the map!
 						if (generationDebugLogs) {
 							Debug.Log ("Result: False (Room would extend past map boundaries)");
 						}
@@ -296,26 +228,8 @@ public class DungeonMapGenerator : MonoBehaviour {
 					break;
 				case Direction.East:
 					if (IsInMapBoundaries(xLocation + j, yLocation + i)) {
-
 						curTile = tiles [xLocation + j, yLocation + i];
-						if (curTile.curTileState != Tile.TileState.Ungenerated) {
-							if (curTile.curTileState != Tile.TileState.Wall) {
-								if (generationDebugLogs) {
-									Debug.Log ("Result: False...Overlap at (" + (xLocation + j) + "," + (yLocation + i) + ")");
-								}	
-								return false;
-							} else {
-								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-								} else {
-									if (generationDebugLogs) {
-										Debug.Log ("Result: False...Overlap at (" + (xLocation + j) + "," + (yLocation + i) + ")");
-									}
-									return false;
-								}
-							}
-						}
 					} else {
-						// This room goes past the edge of the map!
 						if (generationDebugLogs) {
 							Debug.Log ("Result: False (Room would extend past map boundaries)");
 						}
@@ -325,32 +239,38 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 				case Direction.West:
 					if (IsInMapBoundaries(xLocation - j, yLocation + i)) {
-
 						curTile = tiles [xLocation - j, yLocation + i];
-						if (curTile.curTileState != Tile.TileState.Ungenerated) {
-							if (curTile.curTileState != Tile.TileState.Wall) {
-								if (generationDebugLogs) {
-									Debug.Log ("Result: False...Overlap at (" + (xLocation - j) + "," + (yLocation + i) + ")");
-								}
-								return false;
-							} else {
-								if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-								} else {
-									if (generationDebugLogs) {
-										Debug.Log ("Result: False...Overlap at (" + (xLocation - j) + "," + (yLocation + i) + ")");
-									}
-									return false;
-								}
-							}	
-						}
 					} else {
-						// This room goes past the edge of the map!
 						if (generationDebugLogs) {
 							Debug.Log ("Result: False (Room would extend past map boundaries)");
 						}
 						return false;
 					}
 					break;
+				}
+
+				// Check if this tile is ungenerated
+				if (curTile.curTileState != Tile.TileState.Ungenerated) {
+					// If this tile as already been generated, check if it is a wall
+					if (curTile.curTileState != Tile.TileState.Wall) {
+
+						// If the tile is not a wall, we have overlap and should return false
+						if (generationDebugLogs) {
+							Debug.Log ("Result: False...Overlap at (" + (curTile.location.x) + "," + (curTile.location.y) + ")");
+						}
+						return false;
+					} else {
+						// If we have reached this point, we found a wall.  Now check if our current room would also put a wall there
+						if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
+							// Cool, this would also be a wall!  Allow it!
+						} else {
+							// Bad.  We wouldnt put a wall here.  That means something will be overlapping!
+							if (generationDebugLogs) {
+								Debug.Log ("Result: False...Overlap at (" + (curTile.location.x) + "," + (curTile.location.y) + ")");
+							}
+							return false;
+						}
+					}
 				}
 			}
 		}
