@@ -10,6 +10,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 	[Tooltip("Toggles debug logs for map generation")]
 	public bool generationDebugLogs = true;
 
+	[Header("Generation Variables")]
 	[Tooltip("Smallest dimension a room can have.  Includes walls")]
 	public int minRoomDiameter = 3;
 	[Tooltip("Largest dimension a room can have.  Includes walls")]
@@ -90,25 +91,8 @@ public class DungeonMapGenerator : MonoBehaviour {
 				"Direction: " + Direction.North);
 		}
 
-		for (int i = -xLength; i <= xLength; ++i) {
-			for (int j = 0; j < yLength; ++j) {
-				Tile curTile = tiles [((xSize / 2) - (xLength / 2)) + i, ((ySize / 2) - (yLength / 2)) + j];
-				if (Mathf.Abs (i) == xLength || j == 0 || j == (yLength - 1)) {
-					curTile.curTileState = Tile.TileState.Wall;
-					curTile.gameObject.GetComponent<Renderer> ().material.color = Color.grey;
+		GenerateRoom ((xSize / 2) - (xLength / 2), (ySize / 2) - (yLength / 2), xLength, yLength, Direction.North);
 
-					if (!((i == -xLength && j == 0)
-						|| (i == -xLength && j == yLength)
-						|| (i == xLength && j == 0)
-						|| (i == xLength && j == yLength))) {
-						potentialDoorTiles.Add (curTile);
-					}
-				} else {
-					curTile.curTileState = Tile.TileState.Open;
-					curTile.gameObject.GetComponent<Renderer> ().material.color = Color.white;
-				}
-			}
-		}
 
 		// Keep going!
 		while (curRoomAttempts < maxAttempts){
@@ -161,8 +145,10 @@ public class DungeonMapGenerator : MonoBehaviour {
 						if (curTile.curTileState == Tile.TileState.Wall) {
 							SetDoor (curTile);
 						} else {
-							Debug.LogError("Tried to create a door on a non-wall tile");
-							return;
+							// This should be the first room.
+							if (generationDebugLogs){
+								Debug.Log ("Creating first room");
+							}
 						}
 					} else {
 						switch (direction) {
