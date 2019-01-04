@@ -8,6 +8,12 @@ public class Map : MonoBehaviour {
 	public int ySize = 10;
 	public float overlayVerticalOffset = 0.051f;
 
+	GameManager gameManager;
+
+	void Start(){
+		gameManager = (GameManager)(GameObject.Find("GameManager").GetComponent<GameManager>());
+	}
+
 	// TODO - Sterilize inputs here
 	public void SetMapSize(int x, int y){
 		xSize = x;
@@ -40,7 +46,7 @@ public class Map : MonoBehaviour {
 				PathingTile neighborTile = new PathingTile (neighbor);
 
 				// If we cant walk on it or if we have already checked it, dont add it again to the openSet
-				if (neighbor.curTileState == Tile.TileState.Enemy || neighbor.curTileState == Tile.TileState.Obstructed || closedSet.Contains(neighborTile)) {
+				if (gameManager.nonWalkableTiles.Contains(neighbor.curTileState) || closedSet.Contains(neighborTile)) {
 					continue;
 				}
 
@@ -121,7 +127,7 @@ public class Map : MonoBehaviour {
 				Tile curTarget = tileMap [center.location.x + i, center.location.y + j];
 
 				// Check if the tile is walkable and we can get to it
-				if (curTarget.curTileState == Tile.TileState.Open 
+				if ((curTarget.curTileState == Tile.TileState.Open)
 					&& FindPath(center, curTarget, moveSpeed) != null){
 
 					// Highlight that sucker!

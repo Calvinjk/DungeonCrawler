@@ -5,10 +5,13 @@ using UnityEngine;
 public class Tile : MonoBehaviour {
 
 	public enum TileState {
-		Open,
-		Obstructed,
 		Ally,
-		Enemy
+		Door,
+		Enemy,
+		Obstructed,
+		Open,
+		Ungenerated,
+		Wall
 	};
 		
 	public bool ________________;
