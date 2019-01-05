@@ -313,6 +313,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 	void SetWall(Tile tile){
 		tile.curTileState = Tile.TileState.Wall;
 		tile.gameObject.GetComponent<Renderer> ().material.color = Color.grey;
+		tile.transform.localScale = new Vector3 (tile.transform.localScale.x, 2f, tile.transform.localScale.z);
 	}
 
 	void SetFloor(Tile tile){
@@ -323,5 +324,6 @@ public class DungeonMapGenerator : MonoBehaviour {
 	void SetDoor(Tile tile){
 		tile.curTileState = Tile.TileState.Door;
 		tile.gameObject.GetComponent<Renderer> ().material.color = Color.magenta;
+		tile.transform.localScale = new Vector3 (tile.transform.localScale.x, 2.5f, tile.transform.localScale.z);
 	}
 }
