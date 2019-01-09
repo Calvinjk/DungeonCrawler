@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Map : MonoBehaviour {
+	public bool debugLogs = true;
 	public Tile[,] tileMap;
 	public int xSize = 10;
 	public int ySize = 10;
 	public float overlayVerticalOffset = 0.051f;
+
+	public bool ______________;
 
 	GameManager gameManager;
 
@@ -59,7 +62,7 @@ public class Map : MonoBehaviour {
 			}
 		}
 		// If we hit this point in the code, no path was found to the target tile
-		Debug.Log("No path found");
+		if (debugLogs) { Debug.Log ("No path found"); }
 		return null;
 	}
 
