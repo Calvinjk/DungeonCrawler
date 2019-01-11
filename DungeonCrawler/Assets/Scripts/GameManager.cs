@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour {
 	public float curStallTimer = 0f;
 	public GameState curGameState = GameState.AwaitingInput;
 	public Map map;
-	public Vector2Int mapDimensions = Vector2Int.zero;
 	public GameObject curSelectedCharacter = null;
 
 	public CameraController cameraScript;
@@ -48,9 +47,7 @@ public class GameManager : MonoBehaviour {
 	void Update(){
 		// Deselect the currently selected character upon esc keypress
 		if (Input.GetKeyDown(KeyCode.Escape) && curSelectedCharacter) {
-			curSelectedCharacter.GetComponent<PcController> ().UpdateSelectedChar (false);
-			cameraScript.removeCameraTarget ();
-			curGameState = GameState.AwaitingInput;
+			DeselectCurrentCharacter ();
 		}
 
 		if (curGameState == GameState.InputStalling) {
@@ -60,5 +57,11 @@ public class GameManager : MonoBehaviour {
 				curStallTimer = 0f;
 			}
 		}
+	}
+
+	void DeselectCurrentCharacter(){
+		curSelectedCharacter.GetComponent<PcController> ().UpdateSelectedChar (false);
+		cameraScript.removeCameraTarget ();
+		curGameState = GameState.AwaitingInput;
 	}
 }

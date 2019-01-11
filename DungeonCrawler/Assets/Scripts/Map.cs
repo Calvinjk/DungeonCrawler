@@ -89,7 +89,8 @@ public class Map : MonoBehaviour {
 	}
 
 	// Returns true if the location is in the map.   False otherwise.
-	public bool isWithinMap(int x, int y){
+	// NOTE: Does NOT check if it is a walkable square within generated map
+	public bool IsWithinMapBounds(int x, int y){
 		return x >= 0 && x < xSize && y >= 0 && y < ySize;
 	}
 
@@ -103,17 +104,12 @@ public class Map : MonoBehaviour {
 				int checkX = tile.location.x + i;
 				int checkY = tile.location.y + j;
 
-				if (isWithinMap(checkX, checkY)) {
+				if (IsWithinMapBounds(checkX, checkY)) {
 					neighbors.Add (tileMap [checkX, checkY]);
 				}
 			}
 		}
 		return neighbors;
-	}
-		
-	// This will determine which tiles you can move to, 
-	public List<GameObject> CreateMovementOverlay(Tile location, int moveSpeed){
-		return null; // This is just so everything compiles.  Will write later.
 	}
 
 	public GameObject HighlightMovementRange(Tile center, int moveSpeed){
@@ -124,7 +120,7 @@ public class Map : MonoBehaviour {
 				// If it is actually outside of our range, disregard it
 				if ((Mathf.Abs (i) + Mathf.Abs (j)) > moveSpeed) { continue; }
 				// If it would be outside the current map, disregard it
-				if (!isWithinMap(center.location.x + i, center.location.y + j)) { continue; }
+				if (!IsWithinMapBounds(center.location.x + i, center.location.y + j)) { continue; }
 
 
 				Tile curTarget = tileMap [center.location.x + i, center.location.y + j];

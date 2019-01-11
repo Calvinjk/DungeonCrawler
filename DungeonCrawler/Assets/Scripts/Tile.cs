@@ -18,13 +18,10 @@ public class Tile : MonoBehaviour {
 	public Vector2Int location;
 	public TileState curTileState = TileState.Open;
 
-	// Pathfinding variables
-	public Tile parent;
-	public int pathWeight = 0;
-
 	// Constructors
 	public Tile(Vector2Int loc, TileState state = TileState.Open){
 		location = loc;
+		curTileState = state;
 	}
 
 	public void PrintTile(){
