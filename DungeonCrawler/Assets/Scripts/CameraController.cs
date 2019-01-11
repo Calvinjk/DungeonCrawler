@@ -44,9 +44,8 @@ public class CameraController : MonoBehaviour {
 		followTarget = false;
 		cameraState = CameraState.Idle;
 	}
-
-	// Update is called once per frame
-	void Update () {
+		
+	void FixedUpdate () {
 		switch (cameraState){
 		// Move towards target vector
 		case CameraState.VectorTarget:	
@@ -57,8 +56,7 @@ public class CameraController : MonoBehaviour {
 				transform.position = vectorTarget;
 
 				// No reason to keep this location saved if we have reached it already
-				vectorTarget = Vector3.zero;
-				cameraState = CameraState.Idle;
+				removeCameraTarget();
 			}
 			break;
 		// Move towards target object
@@ -68,13 +66,11 @@ public class CameraController : MonoBehaviour {
 
 			if (!followTarget) {
 				// Snap into place if close enough to target object
-				Debug.Log("Camera distance to target: " + Vector3.Distance (transform.position, targetPosition));
 				if (Vector3.Distance (transform.position, targetPosition) < minSnapDistance) {
 					transform.position = vectorTarget;
 
 					// No reason to keep this location saved if we have reached it already
-					objectTarget = null;
-					cameraState = CameraState.Idle;
+					removeCameraTarget();
 				}
 			}
 			break;

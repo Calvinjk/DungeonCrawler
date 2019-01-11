@@ -50,7 +50,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 		potentialDoorTiles = new List<Tile> ();
 	}
 
-	// This function will generate a map given some dimensions
+	// This function will generate a map given some bounding dimensions
 	public Map GenerateMap(int xSize = XDIMDEFAULT, int ySize = YDIMDEFAULT){
 		mapXSize = xSize;
 		mapYSize = ySize;
@@ -73,8 +73,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 				// When instantiating a Tile, attach a Tile script to it and set variables
 				Tile tileScript = curTileObject.AddComponent<Tile>();
 				tileScript.location = new Vector2Int (i, j);
-				tileScript.curTileState = Tile.TileState.Ungenerated;
-				curTileObject.GetComponent<Renderer> ().material.color = Color.yellow;	// Testing visual for an ungenerated tile
+				SetUngenerated (tileScript);
 
 				// Add the generated tile to the tiles array and set the object's parent to the map GameObject
 				tiles[i, j] = tileScript;
@@ -335,5 +334,10 @@ public class DungeonMapGenerator : MonoBehaviour {
 		tile.curTileState = Tile.TileState.Door;
 		tile.gameObject.GetComponent<Renderer> ().material.color = Color.magenta;
 		tile.transform.localScale = new Vector3 (tile.transform.localScale.x, 2.5f, tile.transform.localScale.z);
+	}
+
+	void SetUngenerated(Tile tile){
+		tile.curTileState = Tile.TileState.Ungenerated;
+		tile.gameObject.GetComponent<Renderer> ().material.color = Color.yellow;
 	}
 }

@@ -17,7 +17,6 @@ public class PathingTile : IHeapItem<PathingTile> {
 	// We only need a constructor to make a PathingTile based on an existing Tile
 	public PathingTile(Tile tile){
 		location = tile.location;
-		pathWeight = tile.pathWeight;
 	}
 
 	public int CompareTo(PathingTile tileToCompare){
