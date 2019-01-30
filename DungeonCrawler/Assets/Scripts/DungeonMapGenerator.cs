@@ -100,7 +100,10 @@ public class DungeonMapGenerator : MonoBehaviour {
 		GenerateRoom (xLocation, yLocation, xLength, yLength, Direction.North);
 
 		if (placeSampleCharacter) {
-			Instantiate (sampleCharacterPrefab, new Vector3 (xLocation, 0.5f, yLocation + 1), Quaternion.identity);
+			GameObject unit = Instantiate(sampleCharacterPrefab, new Vector3 (xLocation, 0.5f, yLocation + 1), Quaternion.identity) as GameObject;
+			Player unitScript = unit.GetComponent<Player> ();
+			unitScript.SetLocation (tiles [xLocation, yLocation + 1]);
+			tiles [xLocation, yLocation + 1].curTileState = Tile.TileState.Ally;
 		}
 
 		// Keep going!

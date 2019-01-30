@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour {
 	public float curStallTimer = 0f;
 	public GameState curGameState = GameState.AwaitingInput;
 	public Map map;
-	public GameObject curSelectedCharacter = null;
+	public Player curSelectedPlayer = null;
 
 	public CameraController cameraScript;
 	public DungeonMapGenerator generatorScript;
@@ -40,14 +40,14 @@ public class GameManager : MonoBehaviour {
 		passThroughOnlyTiles = new HashSet<Tile.TileState>();
 		passThroughOnlyTiles.Add (Tile.TileState.Ally);
 
-		// Start the game off by generating a room
+		// Start the game off by generating a map
 		map = generatorScript.GenerateMap(50, 50);
 	}
 
 	void Update(){
-		// Deselect the currently selected character upon esc keypress
-		if (Input.GetKeyDown(KeyCode.Escape) && curSelectedCharacter) {
-			DeselectCurrentCharacter ();
+		// Deselect the currently selected player upon esc keypress
+		if (Input.GetKeyDown(KeyCode.Escape) && curSelectedPlayer) {
+			DeselectCurrentPlayer ();
 		}
 
 		if (curGameState == GameState.InputStalling) {
@@ -59,8 +59,8 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	void DeselectCurrentCharacter(){
-		curSelectedCharacter.GetComponent<PcController> ().UpdateSelectedChar (false);
+	void DeselectCurrentPlayer(){
+		curSelectedPlayer.UpdateSelectedPlayer (false);
 		cameraScript.removeCameraTarget ();
 		curGameState = GameState.AwaitingInput;
 	}
