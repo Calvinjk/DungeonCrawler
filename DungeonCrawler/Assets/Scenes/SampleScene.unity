@@ -177,7 +177,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1001 &1089089257
 Prefab:
@@ -216,7 +216,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4406850751807274, guid: c1548a0f5276fb342bf59d1e7c9cd1c4, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 20633402733532594, guid: c1548a0f5276fb342bf59d1e7c9cd1c4,
         type: 2}
@@ -250,6 +250,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1164733642}
   - component: {fileID: 1164733643}
+  - component: {fileID: 1164733644}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -287,32 +288,15 @@ MonoBehaviour:
   curStallTimer: 0
   curGameState: 1
   map: {fileID: 0}
-  mapDimensions: {x: 10, y: 10}
-  curSelectedCharacter: {fileID: 0}
+  curSelectedPlayer: {fileID: 0}
   cameraScript: {fileID: 2119269978}
-  generatorScript: {fileID: 1172607542}
---- !u!1 &1172607541
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1172607543}
-  - component: {fileID: 1172607542}
-  m_Layer: 0
-  m_Name: DungeonMapGenerator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1172607542
+  generatorScript: {fileID: 1164733644}
+--- !u!114 &1164733644
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1172607541}
+  m_GameObject: {fileID: 1164733641}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 248ba3d87cc3a644c91a00724f48e174, type: 3}
@@ -324,25 +308,12 @@ MonoBehaviour:
   generationDebugLogs: 0
   placeSampleCharacter: 1
   minRoomDiameter: 7
-  maxRoomDiameter: 15
+  maxRoomDiameter: 20
   maxAttempts: 100
   _____________________: 0
   mapXSize: 0
   mapYSize: 0
   curRoomAttempts: 0
---- !u!4 &1172607543
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1172607541}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2119269978 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114489226587383826, guid: c1548a0f5276fb342bf59d1e7c9cd1c4,
