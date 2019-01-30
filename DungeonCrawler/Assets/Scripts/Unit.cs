@@ -5,12 +5,11 @@ using UnityEngine;
 public abstract class Unit : MonoBehaviour {
 
 	////////// Gameplay variables //////////
-	protected int unitSpeed = 5;				// How many tiles this unit can move in a single turn
+	protected int unitSpeed = 5;					// How many tiles this unit can move in a single turn
 
 	////////// Mechanics variables //////////
-	protected float lerpSpeed = 0.1f;			// How fast the unit will move between squares
-	protected float heightOffset = 0.5f;		// This number accounts for the difference in player model height so it sits nicely on a Tile
-	protected float minSnapDistance = 0.05f;	// How close the character must get to its destination before it snaps into position
+	protected float heightOffset = 0.5f;			// This number accounts for the difference in player model height so it sits nicely on a Tile
+	protected float walkDistancePerFrame = 3f;		// How quickly the unit will "walk" per frame
 
 	////////// Code Variables //////////
 	public enum UnitType {
@@ -92,12 +91,11 @@ public abstract class Unit : MonoBehaviour {
 
 			// Big 'ol loop to get there!
 			while (transform.position != destinationPosition) {
-				// Move a little bit towards the destination
-				transform.position = Vector3.Lerp (transform.position, destinationPosition, lerpSpeed);
+				// Move slightly towards the destination
+				transform.position = Vector3.MoveTowards (transform.position, destinationPosition, walkDistancePerFrame * Time.deltaTime);
 
-				// Check if we are within minSnapDistance
-				if (Vector3.Distance (transform.position, destinationPosition) < minSnapDistance) {
-					transform.position = destinationPosition;
+				// If we just reached the destination, pop that sucker off the path
+				if (transform.position == destinationPosition) {
 					path.Remove (path [0]);
 				}
 
