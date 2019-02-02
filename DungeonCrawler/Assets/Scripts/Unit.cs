@@ -5,11 +5,13 @@ using UnityEngine;
 public abstract class Unit : MonoBehaviour {
 
 	////////// Gameplay variables //////////
-	protected int unitSpeed = 5;					// How many tiles this unit can move in a single turn
+	protected int unitSpeed = 5;							// How many tiles this unit can move in a single turn
+	public HashSet<Tile.TileState> nonWalkableTiles;		// Which tiles this unit cannot move through
+	public HashSet<Tile.TileState> passThroughOnlyTiles;	// Which tiles this unit can walk through but not end on
 
 	////////// Mechanics variables //////////
 	protected float heightOffset = 0.5f;			// This number accounts for the difference in player model height so it sits nicely on a Tile
-	protected float walkDistancePerFrame = 3f;		// How quickly the unit will "walk" per frame
+	protected float walkDistancePerFrame = 3f;		// How quickly the unit will "walk" per frame (modified by Time.deltaTime)
 
 	////////// Code Variables //////////
 	public enum UnitType {
@@ -63,7 +65,7 @@ public abstract class Unit : MonoBehaviour {
 		if (destination.curTileState != Tile.TileState.Open) { return false; }
 
 		// First thing to do is find the path.  This requires InitializeConnections() to be called.
-		List<Tile> path = gameManager.map.FindPath (curLocation, destination, unitSpeed);
+		List<Tile> path = gameManager.map.FindPath (curLocation, destination, unitSpeed, nonWalkableTiles, passThroughOnlyTiles);
 
 		// Check if a path was even found
 		if (path != null) { isMoving = true; } 

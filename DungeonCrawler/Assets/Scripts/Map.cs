@@ -23,7 +23,7 @@ public class Map : MonoBehaviour {
 		ySize = y;
 	}
 
-	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance){
+	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance, HashSet<Tile.TileState> nonWalkableTiles, HashSet<Tile.TileState> passThroughOnlyTiles){
 		// Create the two containers necessary for the pathing algorithm
 		Heap<PathingTile> openSet = new Heap<PathingTile> (xSize * ySize);
 		HashSet<PathingTile> closedSet = new HashSet<PathingTile> ();
@@ -49,7 +49,7 @@ public class Map : MonoBehaviour {
 				PathingTile neighborTile = new PathingTile (neighbor);
 
 				// If we cant walk on it or if we have already checked it, dont add it again to the openSet
-				if (gameManager.nonWalkableTiles.Contains(neighbor.curTileState) || closedSet.Contains(neighborTile)) {
+				if (nonWalkableTiles.Contains(neighbor.curTileState) || closedSet.Contains(neighborTile)) {
 					continue;
 				}
 
@@ -112,7 +112,7 @@ public class Map : MonoBehaviour {
 		return neighbors;
 	}
 
-	public GameObject HighlightMovementRange(Tile center, int moveSpeed){
+	public GameObject HighlightMovementRange(Tile center, int moveSpeed, HashSet<Tile.TileState> nonWalkableTiles, HashSet<Tile.TileState> passThroughOnlyTiles){
 		GameObject movementOverlay = new GameObject ("MovementOverlay");
 		// Cycle through every tile that might be in our range
 		for (int i = -moveSpeed; i <= moveSpeed; ++i) {
@@ -127,7 +127,7 @@ public class Map : MonoBehaviour {
 
 				// Check if the tile is walkable and we can get to it
 				if ((curTarget.curTileState == Tile.TileState.Open)
-					&& FindPath(center, curTarget, moveSpeed) != null){
+					&& FindPath(center, curTarget, moveSpeed, nonWalkableTiles, passThroughOnlyTiles) != null){
 
 					// Highlight that sucker!
 					GameObject movementOverlayTile = Instantiate(Resources.Load("Prefabs/MovementOverlay") as GameObject);

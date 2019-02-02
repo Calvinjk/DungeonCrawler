@@ -12,8 +12,22 @@ public class Player : Unit {
 	public GameObject movementOverlay;
 
 	void Start(){
+		// Set up the connections to the camera and the GameManager
 		InitializeConnections ();
+
+		// Define this unit to be of type ally
 		unitType = UnitType.Ally;
+
+		// Define which tiles this unit cannot path across
+		nonWalkableTiles = new HashSet<Tile.TileState> ();
+		nonWalkableTiles.Add (Tile.TileState.Wall);
+		nonWalkableTiles.Add (Tile.TileState.Enemy);
+		nonWalkableTiles.Add (Tile.TileState.Ungenerated);
+		nonWalkableTiles.Add (Tile.TileState.Obstructed);
+
+		// Define which tiles this unit can path across but not end on
+		passThroughOnlyTiles = new HashSet<Tile.TileState>();
+		passThroughOnlyTiles.Add (Tile.TileState.Ally);
 	}
 
 	// TODO - Delete this public function when we actually SPAWN or CREATE units
@@ -41,7 +55,7 @@ public class Player : Unit {
 
 				if (movementDestination == null) {	// Need to do confirmation step
 					if (hitTile.curTileState == Tile.TileState.Open
-						&& gameManager.map.FindPath (curLocation, hitTile, unitSpeed) != null) { // We are still confirming movement
+						&& gameManager.map.FindPath (curLocation, hitTile, unitSpeed, nonWalkableTiles, passThroughOnlyTiles) != null) { // We are still confirming movement
 
 						movementDestination = hitTile;
 						gameManager.map.UpdateSelectedOverlayTile (movementDestination, movementDestination);
@@ -51,7 +65,7 @@ public class Player : Unit {
 					UpdateSelectedPlayer (false);
 				} else { // User clicked on a different tile
 					if (hitTile.curTileState == Tile.TileState.Open
-					    && gameManager.map.FindPath (curLocation, movementDestination, unitSpeed) != null) {
+						&& gameManager.map.FindPath (curLocation, movementDestination, unitSpeed, nonWalkableTiles, passThroughOnlyTiles) != null) {
 						gameManager.map.UpdateSelectedOverlayTile (movementDestination, hitTile);
 						movementDestination = hitTile;
 					}
@@ -81,7 +95,7 @@ public class Player : Unit {
 			this.gameObject.GetComponent<Renderer> ().material.color = Color.green;
 
 			// Highlight movement range
-			movementOverlay = gameManager.map.HighlightMovementRange(curLocation, unitSpeed);
+			movementOverlay = gameManager.map.HighlightMovementRange(curLocation, unitSpeed, nonWalkableTiles, passThroughOnlyTiles);
 
 			// Deal with the camera
 			isoCamera.removeCameraTarget();
