@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Map : MonoBehaviour {
-	public bool debugLogs = true;
+	public bool debugLogs = false;
 	public Tile[,] tileMap;
 	public int xSize = 10;
 	public int ySize = 10;
@@ -11,19 +11,13 @@ public class Map : MonoBehaviour {
 
 	public bool ______________;
 
-	GameManager gameManager;
-
-	void Start(){
-		gameManager = (GameManager)(GameObject.Find("GameManager").GetComponent<GameManager>());
-	}
-
 	// TODO - Sterilize inputs here
 	public void SetMapSize(int x, int y){
 		xSize = x;
 		ySize = y;
 	}
 
-	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance, HashSet<Tile.TileState> nonWalkableTiles, HashSet<Tile.TileState> passThroughOnlyTiles){
+	public List<Tile> FindPath(Tile startTile, Tile targetTile, int maxDistance, HashSet<Tile.TileState> nonWalkableTiles){
 		// Create the two containers necessary for the pathing algorithm
 		Heap<PathingTile> openSet = new Heap<PathingTile> (xSize * ySize);
 		HashSet<PathingTile> closedSet = new HashSet<PathingTile> ();
@@ -126,8 +120,9 @@ public class Map : MonoBehaviour {
 				Tile curTarget = tileMap [center.location.x + i, center.location.y + j];
 
 				// Check if the tile is walkable and we can get to it
-				if ((curTarget.curTileState == Tile.TileState.Open)
-					&& FindPath(center, curTarget, moveSpeed, nonWalkableTiles, passThroughOnlyTiles) != null){
+				if (!nonWalkableTiles.Contains(curTarget.curTileState) 
+					&& !passThroughOnlyTiles.Contains(curTarget.curTileState)
+					&& FindPath(center, curTarget, moveSpeed, nonWalkableTiles) != null){
 
 					// Highlight that sucker!
 					GameObject movementOverlayTile = Instantiate(Resources.Load("Prefabs/MovementOverlay") as GameObject);

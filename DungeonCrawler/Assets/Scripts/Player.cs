@@ -28,6 +28,7 @@ public class Player : Unit {
 		// Define which tiles this unit can path across but not end on
 		passThroughOnlyTiles = new HashSet<Tile.TileState>();
 		passThroughOnlyTiles.Add (Tile.TileState.Ally);
+		passThroughOnlyTiles.Add (Tile.TileState.Door);
 	}
 
 	// TODO - Delete this public function when we actually SPAWN or CREATE units
@@ -54,8 +55,9 @@ public class Player : Unit {
 				Tile hitTile = gameManager.map.tileMap [(int)hit.transform.position.x, (int)hit.transform.position.z];
 
 				if (movementDestination == null) {	// Need to do confirmation step
-					if (hitTile.curTileState == Tile.TileState.Open
-						&& gameManager.map.FindPath (curLocation, hitTile, unitSpeed, nonWalkableTiles, passThroughOnlyTiles) != null) { // We are still confirming movement
+					if (!nonWalkableTiles.Contains(hitTile.curTileState)
+						&& !passThroughOnlyTiles.Contains(hitTile.curTileState)
+						&& gameManager.map.FindPath (curLocation, hitTile, unitSpeed, nonWalkableTiles) != null) { // We are still confirming movement
 
 						movementDestination = hitTile;
 						gameManager.map.UpdateSelectedOverlayTile (movementDestination, movementDestination);
@@ -64,8 +66,10 @@ public class Player : Unit {
 					MoveToTile (movementDestination);
 					UpdateSelectedPlayer (false);
 				} else { // User clicked on a different tile
-					if (hitTile.curTileState == Tile.TileState.Open
-						&& gameManager.map.FindPath (curLocation, movementDestination, unitSpeed, nonWalkableTiles, passThroughOnlyTiles) != null) {
+					if (!nonWalkableTiles.Contains(hitTile.curTileState)
+						&& !passThroughOnlyTiles.Contains(hitTile.curTileState)
+						&& gameManager.map.FindPath (curLocation, movementDestination, unitSpeed, nonWalkableTiles) != null) {
+
 						gameManager.map.UpdateSelectedOverlayTile (movementDestination, hitTile);
 						movementDestination = hitTile;
 					}

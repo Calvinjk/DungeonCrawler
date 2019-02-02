@@ -5,14 +5,10 @@ using UnityEngine;
 // All generated rooms will be an odd number of tiles in at least one dimension to allow for a central door
 public class DungeonMapGenerator : MonoBehaviour {
 	public GameObject floorTile;	// Prefab of a floor tile model to generate.  
-	public GameObject sampleCharacterPrefab;
 
 	// Generation variables to mess with
 	[Tooltip("Toggles debug logs for map generation")]
 	public bool generationDebugLogs = true;
-
-	[Tooltip("Places a sample character in the first generated room")]
-	public bool placeSampleCharacter = true;
 
 	[Header("Generation Variables")]
 	[Tooltip("Smallest dimension a room can have.  Includes walls")]
@@ -50,8 +46,17 @@ public class DungeonMapGenerator : MonoBehaviour {
 		potentialDoorTiles = new List<Tile> ();
 	}
 
+	void ResetGenerationVariables(){
+		curRoomAttempts = 0;
+		if (potentialDoorTiles != null) {
+			potentialDoorTiles.Clear ();	
+		}
+	}
+
 	// This function will generate a map given some bounding dimensions
 	public Map GenerateMap(int xSize = XDIMDEFAULT, int ySize = YDIMDEFAULT){
+		ResetGenerationVariables ();
+
 		mapXSize = xSize;
 		mapYSize = ySize;
 
@@ -99,13 +104,6 @@ public class DungeonMapGenerator : MonoBehaviour {
 
 		GenerateRoom (xLocation, yLocation, xLength, yLength, Direction.North);
 
-		if (placeSampleCharacter) {
-			GameObject unit = Instantiate(sampleCharacterPrefab, new Vector3 (xLocation, 0.5f, yLocation + 1), Quaternion.identity) as GameObject;
-			Player unitScript = unit.GetComponent<Player> ();
-			unitScript.SetLocation (tiles [xLocation, yLocation + 1]);
-			tiles [xLocation, yLocation + 1].curTileState = Tile.TileState.Ally;
-		}
-
 		// Keep going!
 		while (curRoomAttempts < maxAttempts){
 			// Re-randomize the size variables
@@ -127,7 +125,7 @@ public class DungeonMapGenerator : MonoBehaviour {
 				GenerateRoom (curTile.location.x, curTile.location.y, xLength, yLength, direction);
 			}
 		}
-
+			
 		return mapScript;
 	}
 

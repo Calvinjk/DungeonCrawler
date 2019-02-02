@@ -61,11 +61,13 @@ public abstract class Unit : MonoBehaviour {
 	/// Returns false if it cannot make it to the tile, true otherwise
 	/// </summary>
 	protected bool MoveToTile(Tile destination){
-		// If the destination tile is not open, we cannot move to it.
-		if (destination.curTileState != Tile.TileState.Open) { return false; }
+		// If the destination tile is in either the set of non-walkable tiles OR is in the set of tiles only allowed to be passed through...
+		if (nonWalkableTiles.Contains(destination.curTileState) || passThroughOnlyTiles.Contains(destination.curTileState)) { 
+			return false; 
+		}
 
 		// First thing to do is find the path.  This requires InitializeConnections() to be called.
-		List<Tile> path = gameManager.map.FindPath (curLocation, destination, unitSpeed, nonWalkableTiles, passThroughOnlyTiles);
+		List<Tile> path = gameManager.map.FindPath (curLocation, destination, unitSpeed, nonWalkableTiles);
 
 		// Check if a path was even found
 		if (path != null) { isMoving = true; } 
